@@ -166,4 +166,4 @@ class ExtendedApplicationForm(forms.Form):
     # Согласия
     confirm_data = forms.BooleanField(label=_("Я подтверждаю достоверность указанных данных."), required=True)
     consent_personal_data = forms.BooleanField(label=_("Я согласен(а) на обработку персональных данных."), required=True)
-    consent_rules = forms.BooleanField(label=_("Я ознакомлен(а) с правилами и обязуюсь их соблюдать."), required=True)
+    
