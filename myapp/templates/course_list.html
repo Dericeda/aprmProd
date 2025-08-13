@@ -1,0 +1,23 @@
+
+
+{% load i18n %}
+{% include 'header.html' %}
+<div class="container">
+    <div class="cours_in">
+        
+{% for course in courses %}
+  <div class="course-card">
+    {% if course.image %}
+      <img src="{{ course.image.url }}" alt="{{ course.title }}">
+    {% endif %}
+    <h2>{{ course.title }}</h2>
+    <p>{{ course.description|truncatewords:20 }}</p>
+    <a href="{% url 'course_detail' course.pk %}">Подробнее</a>
+  </div>
+{% empty %}
+  <p>Курсы не найдены.</p>
+{% endfor %}
+    </div>
+
+</div>
+  {% include 'footer.html' %}

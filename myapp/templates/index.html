@@ -1,0 +1,852 @@
+{% load static %}
+{% load i18n %}
+{% include 'header.html' %}
+<div class="main_block">
+    <div class="container">
+        <div class="main_b">
+            <div class="main_left">
+
+
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<p class="title_main_block">
+                   PR ЖӘНЕ МЕДИА САЛАСЫНЫҢ КӘСІБИ МАМАНДАР АССОЦИАЦИЯСЫ
+
+                </p>
+                <p class="description_main_block">
+                    PR, медиа және коммуникация саласындағы мамандардың кәсіби дамуына қолдау көрсету, кәсіби этика мен сапа стандарттарын ілгерілету, сондай-ақ медиакоммуникациялық ортаны дамыту және қоғамның медиасауаттылығын арттыруға бағытталған бастамаларды жүзеге асыру.
+
+                </p>
+                <p class="inass_link">
+                    <a href="#join">Ассоциацияға қосылу</a>
+                </p>
+            {% elif lang == 'ru' %}
+            <p class="title_main_block">
+                    Ассоциация 
+профессионалов 
+PR и медиа
+                </p>
+                <p class="description_main_block">
+                    Содействие профессиональному развитию 
+специалистов в сфере PR, медиа и коммуникаций, 
+продвижение стандартов профессиональной этики 
+и качества, а также реализация инициатив, 
+направленных на развитие медиакоммуникационной 
+среды и повышение медиаграмотности общества.
+                </p>
+                <p class="inass_link">
+                    <a href="#join">Вступить в Ассоциацию</a>
+                </p>
+            {% endif %}
+
+                
+            </div>
+            <div class="main_right">
+                
+                {% if latest_news %}
+                <div id="newsCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+                  <div class="carousel-inner">
+                    {% for item in latest_news %}
+                      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{% url 'news_detail' item.pk %}" class="text-decoration-none text-dark">
+                          <div class="card border-0">
+                            {% if item.image %}
+                              <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                              <h5 class="card-title">{{ item.title }}</h5>
+                              <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+                              <small class="text-muted">
+                                {{ item.date|date:"d.m.Y" }}
+                              </small>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <div class="navi_news_main">
+
+                  <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  </button>
+                    <!-- Dots (индикаторы) -->
+  <div class="carousel-indicators">
+    {% for item in latest_news %}
+      <button type="button"
+              data-bs-target="#newsCarousel"
+              data-bs-slide-to="{{ forloop.counter0 }}"
+              class="{% if forloop.first %}active{% endif %}"
+              {% if forloop.first %}aria-current="true"{% endif %}
+              aria-label="Слайд {{ forloop.counter }}">
+      </button>
+    {% endfor %}
+  </div>
+                  <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  </button>
+                </div>
+                  </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+    <a href="#about" class="next_block">
+        <img src="{% static 'img/a.png' %}" alt="">
+      </a>
+</div>
+
+
+
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+
+<div class="about" id="about">`
+    <div class="container">
+        <div class="text_about">
+            <p class="title_about">
+                БІЗ ТУРАЛЫ
+            </p>
+            <p class="description_about">
+                PR, медиа және коммуникация саласындағы мамандардың кәсіби дамуына қолдау көрсету, кәсіби этика мен сапа стандарттарын ілгерілету, сондай-ақ медиакоммуникациялық ортаны дамыту мен қоғамның медиасауаттылығын арттыруға бағытталған бастамаларды жүзеге асыру.
+            </p>
+        </div>
+
+    <div class="about_cart">
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about1ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Кәсіби даму және тәжірибе бөлісу
+
+            </p>
+            <p class="description_cat_ab">
+               PR, медиа және коммуникация саласындағы мамандардың кәсіби өсуіне, салааралық өзара ықпалдастығына және озық тәжірибе алмасуына қолайлы жағдай жасау
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about2ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Білім беру және танымдық бастамалар
+
+            </p>
+            <p class="description_cat_ab">
+                Форумдар, конференциялар, тренингтер мен өзге де іс-шараларды ұйымдастыру, сондай-ақ медиасауаттылықты арттыру және азаматтық диалогты дамыту.
+
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about3ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Медиаортаны дамыту және сапа стандарттарын жетілдіру
+
+            </p>
+            <p class="description_cat_ab">
+                Медиакоммуникацияларды дамытуға бағытталған жобаларды жүзеге асыру, сондай-ақ кәсіби этика мен жауапкершілік стандарттарын қалыптастыру.
+
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about4ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Серіктестік және мүдделерді ұсыну мен қорғау
+
+            </p>
+            <p class="description_cat_ab">
+                Мемлекеттік органдармен, үкіметтік емес ұйымдармен, бизнес және халықаралық құрылымдармен ынтымақтастық орнату, сондай-ақ Ассоциация мүшелерінің мүдделерін барлық деңгейде қорғау.
+
+            </p>
+        </div>
+    </div>
+    <div class="dock_url">
+        <p class="inass_link">
+            <a href="{% static 'document/ustav_kz_1.pdf' %}" target="_blank">Жарғыны жүктеу</a>
+        </p>
+    </div>
+    </div>
+</div>
+
+            {% elif lang == 'ru' %}
+            
+<div class="about" id="about">`
+    <div class="container">
+        <div class="text_about">
+            <p class="title_about">
+                О нас
+            </p>
+            <p class="description_about">
+                Содействие профессиональному развитию специалистов в сфере PR, медиа и коммуникаций, продвижение 
+                стандартов профессиональной этики и качества, а также реализация инициатив, направленных на развитие 
+                медиакоммуникационной среды и повышение медиаграмотности общества.
+            </p>
+        </div>
+
+    <div class="about_cart">
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about1ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Профессиональное 
+                развитие и обмен 
+                опытом
+            </p>
+            <p class="description_cat_ab">
+                Создание условий для роста, 
+                отраслевого взаимодействия 
+                и обмена лучшими практиками 
+                среди специалистов в сфере 
+                PR, медиа и коммуникаций.
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about2ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Образовательные 
+                и просветительские 
+                инициативы
+            </p>
+            <p class="description_cat_ab">
+                Организация форумов, 
+                конференций, тренингов 
+                и мероприятий, а также 
+                продвижение медиаграмотности 
+                и гражданского диалога.
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about3ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Развитие медиасреды 
+                и стандартов 
+                качества
+            </p>
+            <p class="description_cat_ab">
+                Реализация проектов 
+                по улучшению медиа-
+                коммуникаций, формирование 
+                стандартов профессиональной 
+                этики и ответственности.
+            </p>
+        </div>
+        <div class="cart_ab">
+            <div class="icon_about">
+                <img src="{% static 'img/about4ldpi.svg' %}" alt="">
+            </div>
+            <p class="title_cart_ab">
+                Партнёрство 
+                и представительство 
+                интересов
+            </p>
+            <p class="description_cat_ab">
+                Сотрудничество с госорганами, 
+                НПО, бизнесом и между-
+                народными структурами, 
+                защита интересов членов 
+                Ассоциации на всех уровнях.
+            </p>
+        </div>
+    </div>
+    <div class="dock_url">
+        <p class="inass_link">
+            <a href="{% static 'document/ustav_ru.pdf' %}" target="_blank">Скачать устав</a>
+        </p>
+    </div>
+    </div>
+</div>
+
+            {% endif %}
+
+
+<!-- Карусель -->
+<div class="blcok_news" id="news">
+  <div class="container">
+    
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+
+    <p class="title_about">ЖАҢАЛЫҚТАР</p>
+            {% elif lang == 'ru' %}
+            
+    <p class="title_about">Новости</p>
+            {% endif %}
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {% for item in latest_news %}
+          <div class="swiper-slide">
+            <div class="card h-100 shadow-sm">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a href="{% url 'news_detail' item.pk %}" class="text-decoration-none text-dark">
+                    {{ item.title }}
+                  </a>
+                </h5>
+                <p class="card-text text-muted small mb-2">{{ item.date|date:"d.m.Y" }}</p>
+                <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Навигация -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+
+    <div class="all_news">
+      <p class="inass_link">
+        
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+        <a href="/news">Барлық жаңалықтар</a>
+
+            {% elif lang == 'ru' %}
+        <a href="/news">Все новости</a>
+            
+            {% endif %}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Инициализация Swiper -->
+<script>
+  const swiper = new Swiper(".mySwiper", {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev"
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 3
+      }
+    }
+  });
+</script>
+
+
+
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+
+<div class="block_in_a">
+    <div class="container">
+        <div class="vstupit">
+            <div class="vstupit_left">
+                <p class="title_vstup">
+                    Кәсіби қауымдастықтың бір бөлшегіне айналыңыз
+
+                </p>
+                <p class="text_vstup">
+                    эксклюзивті материалдарға қол жеткізіңіз
+
+                </p>
+            </div>
+            <div class="vstupit_right">
+                <a href="#join">Ассоциацияға қосылу</a>
+            </div>
+        </div>
+    </div>
+</div>
+            {% elif lang == 'ru' %}
+            
+<div class="block_in_a">
+    <div class="container">
+        <div class="vstupit">
+            <div class="vstupit_left">
+                <p class="title_vstup">
+                    Станьте частью
+                    профессионального сообщества
+                </p>
+                <p class="text_vstup">
+                    и получите доступ к эксклюзивным материалам
+                </p>
+            </div>
+            <div class="vstupit_right">
+                <a href="#join">Вступить в Ассоциацию</a>
+            </div>
+        </div>
+    </div>
+</div>
+            {% endif %}
+
+
+
+            
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<section class="specialists-section" id="spec">
+    <div class="container">
+        <p class="title_about">
+           МАМАНДАР МЕН АГЕНТТІКТЕР БАЗАСЫ
+        </p>
+        <p class="description_about">
+            Кәсіби даму, тәжірибе алмасу және саланы бірлесіп дамыту мақсатында бірігіп отырған PR, медиа және коммуникация саласындағы мамандар мен ұйымдар.
+
+        </p>
+      <!-- Форма фильтрации -->
+      <form id="filter-form" method="get">
+        <select name="category">
+          <option value="">Санат</option>
+          {% for c in specialist_categories %}
+            <option value="{{ c }}" {% if selected.category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="city">
+          <option value="">Қала</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if selected.city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="specialization">
+          <option value="">Мамандану</option>
+          {% for s in specializations %}
+            <option value="{{ s }}" {% if selected.specialization == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="member">
+          <option value="">Ассоциация мүшелігі.</option>
+          <option value="yes" {% if selected.member == 'yes' %}selected{% endif %}>Да</option>
+          <option value="no" {% if selected.member == 'no' %}selected{% endif %}>Нет</option>
+        </select>
+  
+  
+        <a href="{% url 'index' %}" class="reset-button">
+            Қалпына келтіру
+          </a>
+      </form>
+  
+      <!-- Список специалистов -->
+      <div id="specialist-container">
+        {% include 'partials/_specialist_list.html' %}
+      </div>
+      <div class="dock_url">
+        <p class="inass_link">
+            <a href="{% url 'specialist_list' %}">Толық тізім</a>
+        </p>
+    </div>
+  </section>
+  
+            {% elif lang == 'ru' %}
+            <section class="specialists-section" id="spec">
+    <div class="container">
+        <p class="title_about">
+            База специалистов и агентств
+        </p>
+        <p class="description_about">
+            Специалисты и организации в сфере PR, медиа и коммуникаций, объединённые для профессионального роста, 
+            обмена опытом и совместного развития отрасли.
+        </p>
+      <!-- Форма фильтрации -->
+      <form id="filter-form" method="get">
+        <select name="category">
+          <option value="">Категория</option>
+          {% for c in specialist_categories %}
+            <option value="{{ c }}" {% if selected.category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="city">
+          <option value="">Город</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if selected.city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="specialization">
+          <option value="">Специализация</option>
+          {% for s in specializations %}
+            <option value="{{ s }}" {% if selected.specialization == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="member">
+          <option value="">Участие в Ассоциации</option>
+          <option value="yes" {% if selected.member == 'yes' %}selected{% endif %}>Да</option>
+          <option value="no" {% if selected.member == 'no' %}selected{% endif %}>Нет</option>
+        </select>
+  
+  
+        <a href="{% url 'index' %}" class="reset-button">
+            Сбросить фильтр
+          </a>
+      </form>
+  
+      <!-- Список специалистов -->
+      <div id="specialist-container">
+        {% include 'partials/_specialist_list.html' %}
+      </div>
+      <div class="dock_url">
+        <p class="inass_link">
+            <a href="{% url 'specialist_list' %}">Весь список</a>
+        </p>
+    </div>
+  </section>
+  
+            {% endif %}
+
+
+
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<div class="vstuplenie" id="join">
+    <div class="container">
+        <p class="title_about">
+            АССОЦИАЦИЯҒА ҚОСЫЛУ
+        </p>
+        <div class="block_vstuplenie">
+          
+          <div id="applicationFormWrapper">
+            
+        <p class="description_about" >
+            Осы сауалнаманы толтыра отырып, сіз өз деректеріңіздің жиналуына және өңделуіне келісім бересіз. Ассоциация басшылығы сіздің қауымдастыққа мүшелікке қабылдануыңызды мақұлдау немесе кері қайтару құқығына ие.
+
+        </p>
+<form id="applicationForm" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p class="title_form">Жеке мәліметтер</p>
+  <div class="form_vstup">
+    <label><span>{{ form.last_name.label }} <span style="color:red">*</span></span>{{ form.last_name }}</label>
+    <label><span>{{ form.first_name.label }} <span style="color:red">*</span></span>{{ form.first_name }}</label>
+    <label><span>{{ form.middle_name.label }}</span>{{ form.middle_name }}</label>
+    <label><span>{{ form.birth_date.label }} <span style="color:red">*</span></span>{{ form.birth_date }}</label>
+    <label><span>{{ form.citizenship.label }} <span style="color:red">*</span></span>{{ form.citizenship }}</label>
+    <label><span>{{ form.city.label }} <span style="color:red">*</span></span>{{ form.city }}</label>
+  </div>
+
+  <p class="title_form">Байланыс ақпараты</p>
+  <div class="form_vstup">
+    <label><span>{{ form.phone.label }} <span style="color:red">*</span></span>{{ form.phone }}</label>
+    <label><span>{{ form.additional_phone.label }}</span>{{ form.additional_phone }}</label>
+    <label><span>{{ form.email.label }} <span style="color:red">*</span></span>{{ form.email }}</label>
+    <label><span>{{ form.social_links.label }} <span style="color:red">*</span></span>{{ form.social_links }}</label>
+  </div>
+
+  <p class="title_form">Білімі</p>
+  <div class="form_vstup">
+    <label><span>{{ form.university.label }} <span style="color:red">*</span></span>{{ form.university }}</label>
+    <label><span>{{ form.faculty.label }} <span style="color:red">*</span></span>{{ form.faculty }}</label>
+    <label><span>{{ form.study_years.label }} <span style="color:red">*</span></span>{{ form.study_years }}</label>
+    <label><span>{{ form.degree.label }} <span style="color:red">*</span></span>{{ form.degree }}</label>
+  </div>
+
+  <p class="title_form">Кәсіби қызмет</p>
+  <div class="form_vstup">
+    <label><span>{{ form.job_place.label }} <span style="color:red">*</span></span>{{ form.job_place }}</label>
+    <label><span>{{ form.job_title.label }} <span style="color:red">*</span></span>{{ form.job_title }}</label>
+    <label><span>{{ form.job_region.label }} <span style="color:red">*</span></span>{{ form.job_region }}</label>
+    <label><span>{{ form.job_description.label }} <span style="color:red">*</span></span>{{ form.job_description }}</label>
+    <label><span>{{ form.experience_years.label }} <span style="color:red">*</span></span>{{ form.experience_years }}</label>
+    <label><span>{{ form.professional_description.label }} <span style="color:red">*</span></span>{{ form.professional_description }}</label>
+  </div>
+
+  <p class="title_form">Жетістіктер</p>
+  <div class="form_vstup">
+    <label><span>{{ form.skills.label }}</span>{{ form.skills }}</label>
+    <label><span>{{ form.awards.label }}</span>{{ form.awards }}</label>
+    <label><span>{{ form.publications.label }}</span>{{ form.publications }}</label>
+  </div>
+
+  <p class="title_form">Мүшелік және мотивация</p>
+  <div class="form_vstup">
+    <label><span>{{ form.motivation.label }} <span style="color:red">*</span></span>{{ form.motivation }}</label>
+    <label><span>{{ form.recommender.label }}</span>{{ form.recommender }}</label>
+  </div>
+
+  <div><br>
+    <span>{{ form.interests.label }}</span>
+    {{ form.interests }}
+  </div>
+
+  <p class="title_form">Файлдар</p>
+  <div class="file_forms">
+    <div class="form-group">
+      <label class="custom-file-upload">
+        <span>Резюме / CV</span>
+        {{ form.resume }}
+        <svg width="24" height="24" ...>...</svg>
+      </label>
+      <span id="filename_resume">Файл таңдалмады</span>
+    </div>
+  </div>
+
+  <p class="title_form">Келісім </p>
+  <div class="form-group2">
+    <label>{{ form.confirm_data }} <span>{{ form.confirm_data.label }} <span style="color:red">*</span></span></label>
+    <label>{{ form.consent_personal_data }} <span>{{ form.consent_personal_data.label }} <span style="color:red">*</span></span></label>
+      <label for="{{ form.consent_rules.id_for_label }}">
+        {{ form.consent_rules }}
+        <span>
+          Мен Ассоциацияның <a href="/static/document/ustav_kz_1.pdf" target="_blank">Жарғысымен </a> және Этикалық кодексімен таныстым және оларды сақтауға міндеттімін
+           <span style="color:red">*</span>
+        </span>
+      </label>
+  </div>
+
+  <div class="soglasie">
+    <p>Осы өтінімді толтыра отырып, сіз «PR ЖӘНЕ МЕДИА САЛАСЫНЫҢ КӘСІБИ МАМАНДАР АССОЦИАЦИЯСЫ» ҚОҒАМДЫҚ БІРЛЕСТІГІ тарапынан жеке деректеріңіздің жиналуына және өңделуіне Қазақстан Республикасының «Жеке деректер және оларды қорғау туралы» Заңына сәйкес келісім бересіз.
+</p>
+    <p>Сіздің жеке деректеріңіз тек өтінімді қарау, сізбен байланысу және Ассоциация қызметіне байланысты ақпаратты жолдау мақсатында пайдаланылады.
+</p>
+    <p>Ассоциация сіздің жеке деректеріңізді үшінші тұлғаларға сіздің жазбаша келісіміңізсіз бермейді, бұл Қазақстан Республикасының заңнамасында тікелей көзделген жағдайларды қоспағанда.
+</p>
+  </div>
+
+  <button type="submit" id="submitBtn">ЖІБЕРУ</button>
+</form>
+
+
+  
+  </div>
+  
+<div id="successMessage" style="display: none; color: white; text-align: center; padding: 20px;">
+  <h3>Рақмет! </h3>
+  <p>Өтініміңіз қабылданды. Сізбен 10 жұмыс күні ішінде хабарласамыз.</p>
+</div>
+  </div>
+  </div>
+  </div>
+
+            {% elif lang == 'ru' %}
+            <div class="vstuplenie" id="join">
+    <div class="container">
+        <p class="title_about">
+            ВСТУПИТЬ В АССОЦИАЦИЮ
+        </p>
+        <div class="block_vstuplenie">
+          
+          <div id="applicationFormWrapper">
+            
+        <p class="description_about" >
+            Заполняя эту анкету вы даете согласие на сбор и обработку данных. Руководство ассоциации вправе одобрять
+            или не одобрять вашу кандидатуру на вступление в ассоциацию
+        </p>
+<form id="applicationForm" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p class="title_form">Личные данные</p>
+  <div class="form_vstup">
+    <label><span>{{ form.last_name.label }} <span style="color:red">*</span></span>{{ form.last_name }}</label>
+    <label><span>{{ form.first_name.label }} <span style="color:red">*</span></span>{{ form.first_name }}</label>
+    <label><span>{{ form.middle_name.label }}</span>{{ form.middle_name }}</label>
+    <label><span>{{ form.birth_date.label }} <span style="color:red">*</span></span>{{ form.birth_date }}</label>
+    <label><span>{{ form.citizenship.label }} <span style="color:red">*</span></span>{{ form.citizenship }}</label>
+    <label><span>{{ form.city.label }} <span style="color:red">*</span></span>{{ form.city }}</label>
+  </div>
+
+  <p class="title_form">Контактная информация</p>
+  <div class="form_vstup">
+    <label><span>{{ form.phone.label }} <span style="color:red">*</span></span>{{ form.phone }}</label>
+    <label><span>{{ form.additional_phone.label }}</span>{{ form.additional_phone }}</label>
+    <label><span>{{ form.email.label }} <span style="color:red">*</span></span>{{ form.email }}</label>
+    <label><span>{{ form.social_links.label }} <span style="color:red">*</span></span>{{ form.social_links }}</label>
+  </div>
+
+  <p class="title_form">Образование</p>
+  <div class="form_vstup">
+    <label><span>{{ form.university.label }} <span style="color:red">*</span></span>{{ form.university }}</label>
+    <label><span>{{ form.faculty.label }} <span style="color:red">*</span></span>{{ form.faculty }}</label>
+    <label><span>{{ form.study_years.label }} <span style="color:red">*</span></span>{{ form.study_years }}</label>
+    <label><span>{{ form.degree.label }} <span style="color:red">*</span></span>{{ form.degree }}</label>
+  </div>
+
+  <p class="title_form">Профессиональная деятельность</p>
+  <div class="form_vstup">
+    <label><span>{{ form.job_place.label }} <span style="color:red">*</span></span>{{ form.job_place }}</label>
+    <label><span>{{ form.job_title.label }} <span style="color:red">*</span></span>{{ form.job_title }}</label>
+    <label><span>{{ form.job_region.label }} <span style="color:red">*</span></span>{{ form.job_region }}</label>
+    <label><span>{{ form.job_description.label }} <span style="color:red">*</span></span>{{ form.job_description }}</label>
+    <label><span>{{ form.experience_years.label }} <span style="color:red">*</span></span>{{ form.experience_years }}</label>
+    <label><span>{{ form.professional_description.label }} <span style="color:red">*</span></span>{{ form.professional_description }}</label>
+  </div>
+
+  <p class="title_form">Вступление в Ассоциацию</p>
+  <div class="form_vstup">
+    <label><span>{{ form.skills.label }}</span>{{ form.skills }}</label>
+    <label><span>{{ form.awards.label }}</span>{{ form.awards }}</label>
+    <label><span>{{ form.publications.label }}</span>{{ form.publications }}</label>
+  </div>
+
+  <p class="title_form">Мотивация и интересы</p>
+  <div class="form_vstup">
+    <label><span>{{ form.motivation.label }} <span style="color:red">*</span></span>{{ form.motivation }}</label>
+    <label><span>{{ form.recommender.label }}</span>{{ form.recommender }}</label>
+  </div>
+
+  <div><br>
+    <span>{{ form.interests.label }}</span>
+    {{ form.interests }}
+  </div>
+
+  <p class="title_form">Файлы</p>
+  <div class="file_forms">
+    <div class="form-group">
+      <label class="custom-file-upload">
+        <span>Загрузить резюме / CV</span>
+        {{ form.resume }}
+        <svg width="24" height="24" ...>...</svg>
+      </label>
+      <span id="filename_resume">Файл не выбран</span>
+    </div>
+  </div>
+
+  <p class="title_form">Согласия</p>
+  <div class="form-group2">
+    <label>{{ form.confirm_data }} <span>{{ form.confirm_data.label }} <span style="color:red">*</span></span></label>
+    <label>{{ form.consent_personal_data }} <span>{{ form.consent_personal_data.label }} <span style="color:red">*</span></span></label>
+      <label for="{{ form.consent_rules.id_for_label }}">
+        {{ form.consent_rules }}
+        <span>
+          Я ознакомлен(а) с
+          <a href="/static/document/ustav_ru.pdf" target="_blank">уставом</a>
+          и этическим кодексом Ассоциации и обязуюсь их соблюдать. <span style="color:red">*</span>
+        </span>
+      </label>
+  </div>
+
+  <div class="soglasie">
+    <p>Заполняя данную заявку, вы подтверждаете своё согласие на сбор и обработку ваших персональных данных Общественным объединением «Ассоциация профессионалов PR и медиа» в соответствии с Законом Республики Казахстан «О персональных данных и их защите».
+</p>
+    <p>Ваши персональные данные будут использоваться исключительно в целях рассмотрения заявки, связи с вами и предоставления информации, связанной с деятельностью Ассоциации.
+</p>
+    <p>Мы обязуемся не передавать ваши персональные данные третьим лицам без вашего письменного согласия, за исключением случаев, предусмотренных законодательством Республики Казахстан.
+</p>
+  </div>
+
+  <button type="submit" id="submitBtn">ОТПРАВИТЬ</button>
+</form>
+
+
+  </div>
+  
+<div id="successMessage" style="display: none; color: white; text-align: center; padding: 20px;">
+  <h3>Благодарим!</h3>
+  <p>  Ваша заявка получена. Мы свяжемся с вами в течение 10 рабочих дней</p>
+</div>
+  </div>
+  </div>
+  </div>
+
+            {% endif %}
+
+
+<!-- 
+<div class="course_info">
+  <div class="container">
+    
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<p class="title_about">
+      КУРСТАР МЕН ВЕБИНАРЛАР КАТАЛОГЫ
+
+  </p>
+  <p class="description_about">
+    Каталог Ассоциацияның оқу бағдарламаларын қамтиды — медиасауаттылық бойынша базалық курстардан бастап стратегиялық PR, дағдарыс коммуникациялары және digital-маркетинг жөніндегі кәсіби вебинарларға дейін. Барлық материалдар саладағы жетекші сарапшылар әзірлеген және мамандардың біліктілігін арттыруға, практикалық дағдыларын дамытуға, сондай-ақ коммуникация саласындағы заманауи сын-қатерлерге бейімделуге бағытталған
+  </p>
+            {% elif lang == 'ru' %}
+            <p class="title_about">
+      Каталог курсов и вебинаров
+  </p>
+  <p class="description_about">
+    Каталог объединяет обучающие программы Ассоциации — от базовых курсов по медиаграмотности 
+    до профессиональных вебинаров по стратегическому PR, кризисным коммуникациям и digital-маркетингу. 
+    Все материалы разработаны ведущими экспертами отрасли и направлены на повышение квалификации 
+    специалистов, развитие практических навыков и адаптацию к современным вызовам в сфере коммуникаций.
+  </p>
+            {% endif %}
+    
+  <div class="category_course">
+    {% for category in course_categories %}
+    {% if category.slug %}
+      <li><a href="{% url 'category_detail' slug=category.slug %}">{{ category.title }}</a></li>
+    {% else %}
+      <li>{{ category.title }} (нет ссылки)</li>
+    {% endif %}
+  {% endfor %}  
+  </div>
+    <div class="course">
+      {% for course in latest_courses %}
+      <div class="course-item">
+          <a href="{% url 'course_detail' pk=course.pk %}">
+        <img src="{{ course.image.url }}" alt="{{ course.title }}" width="200">
+        <h3>{{ course.title }}</h3>
+        <p><strong>Категория:</strong> {{ course.category.title }}</p>
+        <p>{{ course.short_description }}</p>
+      </a>
+        {% if course.youtube_link %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    </div>
+    <div class="dock_url">
+      <p class="inass_link">
+
+        
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+             <a href="/course">Барлық тізім</a>
+            {% elif lang == 'ru' %}
+             <a href="/course">Весь список</a>
+            {% endif %}
+         
+      </p>
+  </div>
+  </div>
+</div> -->
+
+ 
+
+
+  <script>
+    document.getElementById('filter-form').addEventListener('change', function(e) {
+      const form = e.target.form;
+      const params = new URLSearchParams(new FormData(form)).toString();
+    
+      fetch(window.location.pathname + '?' + params, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('specialist-container').innerHTML = html;
+      });
+    });
+    </script>
+    
+
+      
+  
+
+    {% include 'footer.html' %}

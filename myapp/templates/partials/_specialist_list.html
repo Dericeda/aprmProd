@@ -1,0 +1,21 @@
+{% load static %}
+
+
+  <div class="container">
+<div id="specialist-results">
+    <div class="base_spec">
+      {% for s in specialists %}
+        <div>
+          {% if s.photo %}
+            <img src="{{ s.photo.url }}" alt="{{ s.full_name }}">
+          {% endif %}
+          <h4 class="name_spec">{{ s.full_name }}</h4>
+          <p class="spec_position">{{ s.position }}</p>
+          <p class="spec_about">{{ s.about }}</p>
+        </div>
+      {% empty %}
+        <p>Нет специалистов по фильтру.</p>
+      {% endfor %}
+    </div>
+  </div>
+  </div>

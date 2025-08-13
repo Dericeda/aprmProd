@@ -1,0 +1,17 @@
+[0;1;31m×[0m gunicorn.service - gunicorn daemon
+     Loaded: loaded (/etc/systemd/system/gunicorn.service; enabled; vendor preset: enabled)
+     Active: [0;1;31mfailed[0m (Result: exit-code) since Mon 2025-05-12 06:14:40 UTC; 4min 10s ago
+    Process: 33350 ExecStart=/root/aprm.kz/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 myproject.wsgi:application [0;1;31m(code=exited, status=1/FAILURE)[0m
+   Main PID: 33350 (code=exited, status=1/FAILURE)
+        CPU: 95ms
+
+May 12 06:14:36 cloud-001 gunicorn[33350]: [2025-05-12 06:14:36 +0000] [33350] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
+May 12 06:14:37 cloud-001 gunicorn[33350]: [2025-05-12 06:14:37 +0000] [33350] [ERROR] Connection in use: ('127.0.0.1', 8000)
+May 12 06:14:37 cloud-001 gunicorn[33350]: [2025-05-12 06:14:37 +0000] [33350] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
+May 12 06:14:38 cloud-001 gunicorn[33350]: [2025-05-12 06:14:38 +0000] [33350] [ERROR] Connection in use: ('127.0.0.1', 8000)
+May 12 06:14:38 cloud-001 gunicorn[33350]: [2025-05-12 06:14:38 +0000] [33350] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
+May 12 06:14:39 cloud-001 gunicorn[33350]: [2025-05-12 06:14:39 +0000] [33350] [ERROR] Connection in use: ('127.0.0.1', 8000)
+May 12 06:14:39 cloud-001 gunicorn[33350]: [2025-05-12 06:14:39 +0000] [33350] [ERROR] connection to ('127.0.0.1', 8000) failed: [Errno 98] Address already in use
+May 12 06:14:40 cloud-001 gunicorn[33350]: [2025-05-12 06:14:40 +0000] [33350] [ERROR] Can't connect to ('127.0.0.1', 8000)
+May 12 06:14:40 cloud-001 systemd[1]: [0;1;39m[0;1;31m[0;1;39mgunicorn.service: Main process exited, code=exited, status=1/FAILURE[0m
+May 12 06:14:40 cloud-001 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgunicorn.service: Failed with result 'exit-code'.[0m

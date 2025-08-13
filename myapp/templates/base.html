@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Ассоциация{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1><a href="/">Ассоциация</a></h1>
+        <nav>
+            <a href="/news/">Новости</a> |
+            <a href="/members/">Участники</a> |
+            <a href="/join_association/">Вступить</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>© {{ now|default:"2025" }} Ассоциация</p>
+    </footer>
+</body>
+</html>

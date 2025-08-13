@@ -1,0 +1,186 @@
+{% include 'header.html' %}
+<div class="inpage">
+    
+<div class="container">
+    <div class="news_in_page">
+        
+    <h1>{{ news.title }}</h1>
+    <p class="date_new"><small>{{ news.date|date:"d.m.Y H:i" }} • {{ news.views }} просмотров</small></p>
+    {% if news.image %}
+        <img src="{{ news.image.url }}" alt="{{ news.title }}">
+    {% endif %}
+
+
+
+    {% if news.youtube_url %}
+        <iframe src="{{ news.youtube_url|cut:'watch?v='|add:'embed/' }}" frameborder="0" allowfullscreen></iframe>
+    {% endif %}
+
+
+
+    <p>{{ news.full_text|linebreaks }}</p>
+
+
+<br>
+<br>
+<div class="position-relative">
+  <div id="newsSwiper" class="swiper">
+    <div class="swiper-wrapper">
+      {% for photo in news.images.all %}
+        <div class="swiper-slide">
+          <a href="{{ photo.image.url }}"
+             class="news-photo d-block"
+             data-caption="{{ photo.caption|default:news.title }}">
+            <div class="ratio ratio-4x3">
+              <img
+                src="{{ photo.image.url }}"
+                alt="{{ photo.caption|default:news.title }}"
+                class="w-100 h-100 object-fit-cover rounded"
+                loading="lazy">
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Навигация -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <!-- Точки, если понадобятся -->
+    <!-- <div class="swiper-pagination"></div> -->
+  </div>
+</div>
+
+<!-- Bootstrap-модалка (как у тебя) -->
+<div class="modal fade" id="newsLightbox" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-black2">
+      <div class="modal-body position-relative p-0">
+        <button type="button" class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-dismiss="modal">×</button>
+        <div class="ratio ratio-16x9 bg-dark2">
+          <img id="lightboxImage" src="" alt="" class="w-100 h-100 object-fit-contain">
+        </div>
+        <div id="lightboxCaption" class="p-3 text-white-50 small"></div>
+        <button id="lightboxPrev" class="btn btn-outline-light position-absolute top-50 start-0 translate-middle-y ms-2">‹</button>
+        <button id="lightboxNext" class="btn btn-outline-light position-absolute top-50 end-0 translate-middle-y me-2">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+    <p class="inass_link"><a href="{% url 'news_list' %}">← Назад ко всем новостям</a></p>
+</div>
+
+    </div>
+</div>
+
+
+
+<!-- Swiper JS (перед </body>) -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+(function () {
+  // --- SWIPER ---
+  const swiperEl = document.querySelector('#newsSwiper');
+  if (!swiperEl) return;
+
+  const swiper = new Swiper(swiperEl, {
+    slidesPerView: 6,        // всегда 4
+    spaceBetween: 8,         // отступ между миниатюрами (px)
+    loop: false,
+    speed: 350,
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    // Если когда-нибудь захочешь отличаться на мобилке — правь тут:
+    breakpoints: {
+      0:   { slidesPerView: 2 },
+      576: { slidesPerView: 2 },
+      992: { slidesPerView: 6 }
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true,
+    },
+    // Можно включить lazy при необходимости:
+    // lazy: { loadOnTransitionStart: true },
+    // watchSlidesProgress: true,
+  });
+
+  // --- LIGHTBOX (Bootstrap Modal) ---
+  const modalEl = document.getElementById('newsLightbox');
+  if (!modalEl) return;
+
+  const modal   = new bootstrap.Modal(modalEl, { keyboard: true });
+  const imgEl   = document.getElementById('lightboxImage');
+  const capEl   = document.getElementById('lightboxCaption');
+  const btnPrev = document.getElementById('lightboxPrev');
+  const btnNext = document.getElementById('lightboxNext');
+
+  function getSlides() {
+    return Array.from(document.querySelectorAll('#newsSwiper .swiper-slide a.news-photo'));
+  }
+
+  function getItems() {
+    return getSlides().map(a => ({
+      src: a.getAttribute('href'),
+      caption: a.dataset.caption || a.querySelector('img')?.alt || ''
+    }));
+  }
+
+  let idx = 0;
+
+  function show(i, syncSwiper = false) {
+    const items = getItems();
+    if (!items.length) return;
+
+    if (i < 0) i = items.length - 1;
+    if (i >= items.length) i = 0;
+
+    idx = i;
+    imgEl.src = items[idx].src;
+    imgEl.alt = items[idx].caption;
+    capEl.textContent = items[idx].caption;
+
+    if (syncSwiper) {
+      swiper.slideTo(idx); // синхронизируем превью карусель
+    }
+  }
+
+  // Открытие лайтбокса по клику по слайду
+  swiperEl.addEventListener('click', function (e) {
+    const a = e.target.closest('a.news-photo');
+    if (!a) return;
+    e.preventDefault();
+
+    const slides = getSlides();
+    const i = slides.indexOf(a);
+    if (i >= 0) {
+      show(i, false);
+      modal.show();
+    }
+  });
+
+  // Кнопки внутри лайтбокса
+  btnPrev.addEventListener('click', () => show(idx - 1, true));
+  btnNext.addEventListener('click', () => show(idx + 1, true));
+
+  // Стрелки клавиатуры при открытой модалке
+  modalEl.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')  show(idx - 1, true);
+    if (e.key === 'ArrowRight') show(idx + 1, true);
+  });
+
+  // Фокус на модалку, чтобы ловить keydown
+  modalEl.addEventListener('shown.bs.modal', () => {
+    modalEl.focus();
+  });
+})();
+</script>
+
+{% include 'footer.html' %}

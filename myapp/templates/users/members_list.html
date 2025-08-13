@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Каталог участников</h2>
+
+<form method="get">
+  {{ form.as_p }}
+  <button type="submit">Поиск</button>
+</form>
+
+<hr>
+
+<ul>
+  {% for member in members %}
+    <li>
+      <strong>{{ member.user.get_full_name }}</strong><br>
+      {{ member.workplace }} — {{ member.position }}
+    </li>
+  {% empty %}
+    <li>Нет участников.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

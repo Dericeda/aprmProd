@@ -1,0 +1,83 @@
+{% load static %}
+{% load i18n %}
+<div class="footer" id="footer">
+
+    
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+
+    <div class="container">
+        <div class="footer_block">
+            <div class="Footer_logo">
+                <img src="{% static 'img/logofooterldpi.svg' %}" alt="">
+            </div>
+            <div class="footer_navi">
+                <ul>
+                   <li>  <a href="/#about" class="">Біз туралы</a></li>
+            <li>    <a href="/news" class="">Жаңалықтар</a></li>
+             <li>   <a href="/#spec" class="">Мамандар мен агенттіктер базасы </a></li>
+             <li>   <a href="/#footer" class="">Байланыс</a></li>
+                </ul>
+            </div>
+            <div class="footer_vstup">
+                <p class="inass_link">
+                    <a href="/#join">Ассоциацияға қосылу</a>
+                </p>
+            </div>
+        </div>
+        <p class="contact_footer">
+            Бізбен байланысу: info@aprm.kz <br><a href="tel:+77754639076">+7 775 463 9076</a>
+        </p>
+        <div class="footer_copiright">
+            <div class="copiright">
+                <p>© 2025 APRM — Association of PR & Media Professionals</p>
+            </div>
+            <div class="politic_footer">
+               <a href="{% static 'document/Politic1_konf_kz.docx' %}" target="_blank">Құпиялылық саясаты</a>  | <a href="#">Пайдаланушы келісімі</a>
+            </div>
+        </div>
+    </div>
+            {% elif lang == 'ru' %}
+            
+    <div class="container">
+        <div class="footer_block">
+            <div class="Footer_logo">
+                <img src="{% static 'img/logofooterldpi.svg' %}" alt="">
+            </div>
+            <div class="footer_navi">
+                <ul>
+                   <li>  <a href="/#about" class="">О Нас</a></li>
+              <li>   <a href="/news" class="">Новости</a></li>
+               <li>  <a href="/#spec" class="">База специалистов и агентств </a></li>
+              <li>   <a href="/#footer" class="">Контакты</a></li>
+                </ul>
+            </div>
+            <div class="footer_vstup">
+                <p class="inass_link">
+                    <a href="/#join">Вступить в ассоциацию</a>
+                </p>
+            </div>
+        </div>
+        <p class="contact_footer">
+            Связаться с нами: info@aprm.kz <br><a href="tel:+77754639076">+7 775 463 9076</a>
+        </p>
+        <div class="footer_copiright">
+            <div class="copiright">
+                <p>© 2025 APRM — Association of PR & Media Professionals</p>
+            </div>
+            <div class="politic_footer">
+               <a href="{% static 'document/Politic_konf.docx' %}" target="_blank">Политика конфиденциальности</a>  | <a href="#">Пользовательское соглашение</a>
+            </div>
+        </div>
+    </div>
+            {% endif %}
+
+
+</div>
+
+
+<script src="{% static 'js/main.js' %}" defer></script>
+
+</body>
+</html>

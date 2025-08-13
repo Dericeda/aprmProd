@@ -1,0 +1,117 @@
+
+{% load i18n %}
+{% include 'header.html' %}
+{% block content %}
+<div class="container">
+
+  
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<h1>Барлық мамандар</h1>
+  
+<form id="filter-form" method="get">
+        <select name="category">
+          <option value="">Санат</option>
+          {% for c in specialist_categories %}
+            <option value="{{ c }}" {% if selected.category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="city">
+          <option value="">Қала</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if selected.city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="specialization">
+          <option value="">Мамандық</option>
+          {% for s in specializations %}
+            <option value="{{ s }}" {% if selected.specialization == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="member">
+          <option value="">Қауымдастыққа қатысу</option>
+          <option value="yes" {% if selected.member == 'yes' %}selected{% endif %}>Да</option>
+          <option value="no" {% if selected.member == 'no' %}selected{% endif %}>Нет</option>
+        </select>
+  
+  
+        <a href="{% url 'specialist_list' %}" class="reset-button">
+            Қалпына келтіру
+          </a>
+      </form>
+</form>
+
+</div>
+<div id="specialist-results">
+  {% include 'partials/_specialist_list.html' %}
+</div>
+            {% elif lang == 'ru' %}
+            <h1>Все специалисты</h1>
+  
+<form id="filter-form" method="get">
+        <select name="category">
+          <option value="">Категория</option>
+          {% for c in specialist_categories %}
+            <option value="{{ c }}" {% if selected.category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="city">
+          <option value="">Город</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if selected.city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="specialization">
+          <option value="">Специализация</option>
+          {% for s in specializations %}
+            <option value="{{ s }}" {% if selected.specialization == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+  
+        <select name="member">
+          <option value="">Участие в Ассоциации</option>
+          <option value="yes" {% if selected.member == 'yes' %}selected{% endif %}>Да</option>
+          <option value="no" {% if selected.member == 'no' %}selected{% endif %}>Нет</option>
+        </select>
+  
+  
+        <a href="{% url 'specialist_list' %}" class="reset-button">
+            Сбросить фильтр
+          </a>
+      </form>
+</form>
+
+</div>
+<div id="specialist-results">
+  {% include 'partials/_specialist_list.html' %}
+</div>
+            {% endif %}
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('filter-form').addEventListener('change', function(e) {
+  const form = e.currentTarget;
+  const formData = new FormData(form);
+  const params = new URLSearchParams(formData);
+
+  fetch(`?${params.toString()}`, {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('specialist-results').innerHTML = data.html;
+  });
+});
+</script>
+{% endblock %}
+
+{% include 'footer.html' %}

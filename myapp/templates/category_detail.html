@@ -1,0 +1,24 @@
+{% load i18n %}
+{% include 'header.html' %}
+<div class="container">
+  
+  <h1 >Курсы в категории: {{ category.title }}</h1>
+<div class="category_cours">
+  
+  <div class="course-list">
+    {% for course in courses %}
+      <div class="course-item">
+        <a href="{% url 'course_detail' pk=course.pk %}">
+          <img src="{{ course.image.url }}" alt="{{ course.title }}">
+          <h3 class="title_cat">{{ course.title }}</h3>
+        </a>
+        <p class="text_cat">{{ course.short_description }}</p>
+      </div>
+    {% empty %}
+      <p>Нет курсов в этой категории.</p>
+    {% endfor %}
+  </div>
+
+</div>
+</div>
+  {% include 'footer.html' %}

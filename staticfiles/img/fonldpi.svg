@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1000">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-2 {
+        stroke: #0159d9;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" width="1920" height="1000"/>
+    </clipPath>
+  </defs>
+  <g id="_Слой_1-2" data-name="Слой 1">
+    <g class="cls-3">
+      <g>
+        <path class="cls-2" d="M1383.43,1150h-197.93l401.93-850h299.93l403.13,850h-197.92l-95.93-202.78h-518.5l-94.71,202.78ZM1553.43,788.15h367.93l-183.36-387.36-184.57,387.36Z"/>
+        <path class="cls-2" d="M536.57-150h197.93l-401.93,850H32.63L-370.5-150h197.92L-76.65,52.78H441.85l94.71-202.78ZM366.57,211.85H-1.36l183.36,387.36,184.57-387.36Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

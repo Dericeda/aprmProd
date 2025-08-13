@@ -1,0 +1,137 @@
+{% load static %}
+{% load i18n %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ассоциация профессионалов PR и медиа {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}?v=2.1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/media.css' %}?v=1.4">
+    <link rel="stylesheet" type="text/css"  href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.png' %}">
+
+
+</head>
+<body>
+<div class="container">
+    
+    <header class="custom-header">
+        <div class="container">
+          <div class="header-content">
+            <button class="menu-toggle" id="menuToggle">
+              ☰
+            </button>
+          </div>
+        </div>
+      
+        <nav class="mobile-menu" id="mobileMenu">
+          <button class="close-btn" id="closeMenu">×</button>
+          <ul>
+            
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+           <li>  <a href="/#about" class="">Біз туралы</a></li>
+            <li>    <a href="/news" class="">Жаңалықтар</a></li>
+             <li>   <a href="/#spec" class="">Мамандар мен агенттіктер базасы </a></li>
+             <li>   <a href="/#footer" class="">Байланыс</a></li>
+
+            {% elif lang == 'ru' %}
+            
+           <li>  <a href="/#about" class="">О Нас</a></li>
+              <li>   <a href="/news" class="">Новости</a></li>
+               <li>  <a href="/#spec" class="">База специалистов и агентств </a></li>
+              <li>   <a href="/#footer" class="">Контакты</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </header>
+
+
+   
+        <script>
+            const menuToggle = document.getElementById("menuToggle");
+            const mobileMenu = document.getElementById("mobileMenu");
+            const closeMenu = document.getElementById("closeMenu");
+          
+            menuToggle.addEventListener("click", () => {
+              mobileMenu.classList.add("active");
+            });
+          
+            closeMenu.addEventListener("click", () => {
+              mobileMenu.classList.remove("active");
+            });
+          
+            // Закрытие при клике вне меню
+            window.addEventListener("click", (e) => {
+              if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                mobileMenu.classList.remove("active");
+              }
+            });
+          </script>
+
+
+    <div class="header">
+        <div class="logo">
+           <a href="/"> <img src="{% static 'img/logo.svg' %}" alt=""></a>
+        </div>
+
+        
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+            <nav>
+                <a href="/#about" class="">Біз туралы</a>
+                <a href="/news" class="">Жаңалықтар</a>
+                <a href="/#spec" class="">Мамандар мен агенттіктер базасы </a>
+                <a href="/#footer" class="">Байланыс</a>
+                
+            </nav>
+            {% elif lang == 'ru' %}
+             <nav>
+                <a href="/#about" class="">О Нас</a>
+                <a href="/news" class="">Новости</a>
+                <a href="/#spec" class="">База специалистов и агентств </a>
+                <a href="/#footer" class="">Контакты</a>
+                
+            </nav>
+            {% endif %}
+
+           
+            
+              
+            <div class="lang">
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+                    <a href="/ru{{ request.get_full_path|slice:'3:' }}" class="me-2 {% if LANGUAGE_CODE == 'ru' %}fw-bold text-warning{% endif %}">
+                        RU
+                      </a>
+            {% elif lang == 'ru' %}
+                <a href="/kk{{ request.get_full_path|slice:'3:' }}" class="{% if LANGUAGE_CODE == 'kk' %}fw-bold text-warning{% endif %}">
+                    KZ
+                  </a>
+            {% endif %}
+        </div>
+                  <div class="inassociac">
+
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+
+                    <a href="/kk/#join">Ассоциацияға қосылу</a>
+            {% elif lang == 'ru' %}
+            
+                    <a href="/#join">Вступить в Ассоциацию</a>
+            {% endif %}
+                  </div>
+    </div>
+</div>

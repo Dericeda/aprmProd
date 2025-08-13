@@ -1,0 +1,5 @@
+Django>=4.2,<5.0
+pillow
+requests
+django-admin-interface
+django-colorfield

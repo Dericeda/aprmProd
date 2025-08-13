@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Участники</title></head>
+<body>
+<h1>Участники</h1>
+<ul>
+    {% for member in members %}
+        <li>{{ member.user.get_full_name }} — {{ member.position }} в {{ member.workplace }}</li>
+    {% endfor %}
+</ul>
+</body>
+</html>

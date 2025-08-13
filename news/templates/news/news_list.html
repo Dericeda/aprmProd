@@ -1,0 +1,35 @@
+{% include 'header.html' %}
+<body>
+<div class="container">
+<div class="in_news_list">
+    <h1>Последние новости</h1>
+
+   <!-- ... до цикла -->
+
+<div class="news_list_in">
+{% for item in news_items %}
+<a href="{% url 'news_detail' item.pk %}" class="title_new">
+    <div class="news-item">
+        {% if item.image %}
+            <div class="news-image">
+                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+            </div>
+        {% endif %}
+        <div class="news-content">
+            <h2>{{ item.title }}</h2>
+            <div class="meta">
+                {{ item.date|date:"d.m.Y H:i" }} • {{ item.views }} просмотров
+            </div>
+            <div class="description">
+                {{ item.description|truncatewords:30 }}
+            </div>
+        </div>
+    </div>
+</a>
+{% empty %}
+<p>Пока новостей нет.</p>
+{% endfor %}
+</div>
+</div>
+</div>
+{% include 'footer.html' %}
