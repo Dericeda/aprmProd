@@ -1,0 +1,47 @@
+<!-- myapp/templates/admin/myapp/specialist/change_list.html -->
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.export-actions {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+.export-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.export-btn:hover {
+    background: #218838;
+    color: white;
+}
+.stats-info {
+    margin-left: 20px;
+    color: #6c757d;
+    font-size: 14px;
+}
+</style>
+{% endblock %}
+
+{% block content_title %}
+{{ block.super }}
+<div class="export-actions">
+    <a href="{% url 'admin:specialist_export_excel' %}" class="export-btn">
+        📊 Экспорт в Excel
+    </a>
+    <span class="stats-info">
+        Всего заявок: {{ cl.result_count }}
+    </span>
+</div>
+{% endblock %}

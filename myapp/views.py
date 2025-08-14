@@ -89,6 +89,8 @@ def upload_file_to_bitrix(file, filename):
         return result['result']['ID']
     return None
 
+# myapp/views.py (обновить функцию index)
+
 def index(request):
     latest_courses = Course.objects.order_by('-id')[:5]
     course_categories = CourseCategory.objects.all()
@@ -129,71 +131,113 @@ def index(request):
         form = ExtendedApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             data = form.cleaned_data
-            Specialist.objects.create(
-                full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}",
+            
+            # Создаем объект специалиста
+            specialist = Specialist.objects.create(
+                full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}".strip(),
                 email=data['email'],
                 phone=data['phone'],
+                additional_phone=data.get('additional_phone', ''),
+                birth_date=data['birth_date'],
+                citizenship=data['citizenship'],
                 city=data['city'],
-                specialization=', '.join(data.get('interests', [])),
+                social_links=data['social_links'],
+                
+                # Образование
+                university=data['university'],
+                faculty=data['faculty'],
+                study_years=data['study_years'],
+                degree=data['degree'],
+                
+                # Профессиональная деятельность
                 position=data['job_title'],
                 workplace=data['job_place'],
-                about=data['professional_description'],
-                category=data['degree'],
-                social_links=data['social_links'],
                 job_region=data['job_region'],
                 job_description=data['job_description'],
                 experience_years=data['experience_years'],
+                professional_description=data['professional_description'],
+                
+                # Достижения
                 skills=data.get('skills', ''),
                 awards=data.get('awards', ''),
                 publications=data.get('publications', ''),
-                motivation=data.get('motivation', ''),
+                
+                # Мотивация
+                motivation=data['motivation'],
+                interests=', '.join(data.get('interests', [])),  # Сохраняем как строку
                 recommender=data.get('recommender', ''),
+                
+                # Согласия
+                confirm_data=data['confirm_data'],
+                consent_personal_data=data['consent_personal_data'],
+                
+                # Статус
                 moderation_status='pending'
             )
-            # Сохраняем файл резюме (resume)
-            file_links = []
-            resume_file = request.FILES.get('resume')
-            if resume_file:
-                path = default_storage.save(f'uploads/{resume_file.name}', resume_file)
-                full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
-                file_links.append(f"Резюме: {full_url}")
+            
+            # Сохраняем файлы
+            if 'resume' in request.FILES:
+                specialist.resume = request.FILES['resume']
+            
+            if 'photo' in request.FILES:
+                specialist.photo = request.FILES['photo']
+                
+            if 'documents' in request.FILES:
+                specialist.documents = request.FILES['documents']
+                
+            specialist.save()
 
-            # Формируем текст комментария
+            # Подготавливаем файлы для отправки в Bitrix24
+            file_links = []
+            
+            if specialist.resume:
+                file_links.append(f"Резюме: {request.build_absolute_uri(specialist.resume.url)}")
+            
+            if specialist.photo:
+                file_links.append(f"Фото: {request.build_absolute_uri(specialist.photo.url)}")
+                
+            if specialist.documents:
+                file_links.append(f"Документы: {request.build_absolute_uri(specialist.documents.url)}")
+
+            # Формируем текст комментария для Bitrix24
             comments = (
-                f"ФИО: {data['last_name']} {data['first_name']} {data.get('middle_name', '')}\n"
-                f"Дата рождения: {data['birth_date']}\n"
-                f"Гражданство: {data['citizenship']}\n"
-                f"Город: {data['city']}\n\n"
-                f"Телефон: {data['phone']}\n"
-                f"Доп. телефон: {data.get('additional_phone', '')}\n"
-                f"Email: {data['email']}\n"
-                f"Соцсети: {data['social_links']}\n\n"
-                f"Образование: {data['university']}, {data['faculty']}, {data['study_years']}, {data['degree']}\n\n"
-                f"Работа: {data['job_place']}, {data['job_title']}, {data['job_region']}\n"
-                f"О компании: {data['job_description']}\n"
-                f"Стаж: {data['experience_years']} лет\n\n"
-                f"Описание деятельности: {data['professional_description']}\n"
-                f"Навыки: {data.get('skills', '')}\n"
-                f"Награды: {data.get('awards', '')}\n"
-                f"Публикации: {data.get('publications', '')}\n\n"
-                f"Мотивация: {data['motivation']}\n"
-                f"Интересы: {', '.join(data.get('interests', []))}\n"
-                f"Рекомендатель: {data.get('recommender', '')}\n\n"
+                f"ФИО: {specialist.full_name}\n"
+                f"Дата рождения: {specialist.birth_date}\n"
+                f"Гражданство: {specialist.citizenship}\n"
+                f"Город: {specialist.city}\n\n"
+                f"Телефон: {specialist.phone}\n"
+                f"Доп. телефон: {specialist.additional_phone}\n"
+                f"Email: {specialist.email}\n"
+                f"Соцсети: {specialist.social_links}\n\n"
+                f"Образование: {specialist.university}, {specialist.faculty}, {specialist.study_years}, {specialist.degree}\n\n"
+                f"Работа: {specialist.workplace}, {specialist.position}, {specialist.job_region}\n"
+                f"О компании: {specialist.job_description}\n"
+                f"Стаж: {specialist.experience_years} лет\n\n"
+                f"Описание деятельности: {specialist.professional_description}\n"
+                f"Навыки: {specialist.skills}\n"
+                f"Награды: {specialist.awards}\n"
+                f"Публикации: {specialist.publications}\n\n"
+                f"Мотивация: {specialist.motivation}\n"
+                f"Интересы: {specialist.interests}\n"
+                f"Рекомендатель: {specialist.recommender}\n\n"
                 + "\n".join(file_links)
             )
 
             # Отправка в Bitrix24
-            url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
-            payload = {
-                'fields': {
-                    'TITLE': 'Расширенная заявка с сайта',
-                    'NAME': f"{data['first_name']} {data['last_name']}",
-                    'EMAIL': [{'VALUE': data['email'], 'VALUE_TYPE': 'WORK'}],
-                    'PHONE': [{'VALUE': data['phone'], 'VALUE_TYPE': 'WORK'}],
-                    'COMMENTS': comments,
+            try:
+                url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
+                payload = {
+                    'fields': {
+                        'TITLE': 'Расширенная заявка с сайта',
+                        'NAME': specialist.full_name,
+                        'EMAIL': [{'VALUE': specialist.email, 'VALUE_TYPE': 'WORK'}],
+                        'PHONE': [{'VALUE': specialist.phone, 'VALUE_TYPE': 'WORK'}],
+                        'COMMENTS': comments,
+                    }
                 }
-            }
-            requests.post(url, json=payload)
+                requests.post(url, json=payload)
+            except Exception as e:
+                print(f"Ошибка отправки в Bitrix24: {e}")
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': True})

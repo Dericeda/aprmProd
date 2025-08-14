@@ -91,6 +91,8 @@ class CRMApplicationForm(forms.Form):
     documents = forms.FileField(label=_("Сертификаты и документы"))
 
 
+# myapp/forms.py (добавить к существующему коду)
+
 class ExtendedApplicationForm(forms.Form):
     input_attrs = {'class': 'form-control'}
 
@@ -100,7 +102,7 @@ class ExtendedApplicationForm(forms.Form):
     additional_phone_attrs = input_attrs.copy()
     additional_phone_attrs['id'] = 'id_additional_phone'
 
-      # Личные данные
+    # Личные данные
     last_name = forms.CharField(label=_("Фамилия"), required=True, widget=forms.TextInput(attrs=input_attrs))
     first_name = forms.CharField(label=_("Имя"), required=True, widget=forms.TextInput(attrs=input_attrs))
     middle_name = forms.CharField(label=_("Отчество"), required=False, widget=forms.TextInput(attrs=input_attrs))
@@ -160,10 +162,11 @@ class ExtendedApplicationForm(forms.Form):
 
     recommender = forms.CharField(label=_("Кто из pr специалистов с опытом работы от 7 лет может выступить вашим рекомендателем"), required=False, widget=forms.TextInput(attrs=input_attrs))
 
-    # Резюме
-    resume = forms.FileField(label=_("Резюме"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    # Файлы
+    resume = forms.FileField(label=_("Резюме / CV"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    photo = forms.FileField(label=_("Фотография кандидата"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    documents = forms.FileField(label=_("Дополнительные документы (сертификаты, дипломы)"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
 
     # Согласия
     confirm_data = forms.BooleanField(label=_("Я подтверждаю достоверность указанных данных."), required=True)
     consent_personal_data = forms.BooleanField(label=_("Я согласен(а) на обработку персональных данных."), required=True)
-    

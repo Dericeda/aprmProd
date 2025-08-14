@@ -1,0 +1,333 @@
+<!-- myapp/templates/admin/specialist_detail.html -->
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrahead %}
+<style>
+.specialist-detail {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+.detail-section {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+.detail-section h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #0066cc;
+    padding-bottom: 10px;
+}
+.detail-row {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+.detail-label {
+    font-weight: bold;
+    min-width: 200px;
+    color: #666;
+}
+.detail-value {
+    flex: 1;
+    color: #333;
+}
+.photo-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+.file-link {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #0066cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+.file-link:hover {
+    background: #0052a3;
+    color: white;
+}
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.status-pending { background: #fff3cd; color: #856404; }
+.status-approved { background: #d4edda; color: #155724; }
+.status-rejected { background: #f8d7da; color: #721c24; }
+.interests-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.interest-tag {
+    background: #e3f2fd;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #0277bd;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="specialist-detail">
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="{% url 'admin:myapp_specialist_changelist' %}">Специалисты</a>
+        &rsaquo; {{ specialist.full_name }}
+    </div>
+
+    <h1>{{ title }}</h1>
+    
+    <div class="submit-row">
+        <a href="{% url 'admin:myapp_specialist_change' specialist.pk %}" class="default">Редактировать</a>
+        <a href="{% url 'admin:myapp_specialist_changelist' %}" class="button">← Назад к списку</a>
+    </div>
+
+    <!-- Личная информация -->
+    <div class="detail-section">
+        <h3>Личная информация</h3>
+        
+        {% if specialist.photo %}
+        <div class="detail-row">
+            <div class="detail-label">Фотография:</div>
+            <div class="detail-value">
+                <img src="{{ specialist.photo.url }}" alt="Фото" class="photo-preview">
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="detail-row">
+            <div class="detail-label">ФИО:</div>
+            <div class="detail-value">{{ specialist.full_name|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Email:</div>
+            <div class="detail-value">
+                {% if specialist.email %}
+                    <a href="mailto:{{ specialist.email }}">{{ specialist.email }}</a>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Телефон:</div>
+            <div class="detail-value">{{ specialist.phone|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Дополнительный телефон:</div>
+            <div class="detail-value">{{ specialist.additional_phone|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Дата рождения:</div>
+            <div class="detail-value">{{ specialist.birth_date|date:"d.m.Y"|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Гражданство:</div>
+            <div class="detail-value">{{ specialist.citizenship|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Город:</div>
+            <div class="detail-value">{{ specialist.city|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Социальные сети:</div>
+            <div class="detail-value">{{ specialist.social_links|default:"—" }}</div>
+        </div>
+    </div>
+
+    <!-- Образование -->
+    <div class="detail-section">
+        <h3>Образование</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Учебное заведение:</div>
+            <div class="detail-value">{{ specialist.university|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Факультет/Специальность:</div>
+            <div class="detail-value">{{ specialist.faculty|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Годы обучения:</div>
+            <div class="detail-value">{{ specialist.study_years|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Академическая степень:</div>
+            <div class="detail-value">{{ specialist.degree|default:"—" }}</div>
+        </div>
+    </div>
+
+    <!-- Профессиональная деятельность -->
+    <div class="detail-section">
+        <h3>Профессиональная деятельность</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Должность:</div>
+            <div class="detail-value">{{ specialist.position|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Место работы:</div>
+            <div class="detail-value">{{ specialist.workplace|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Регион работы:</div>
+            <div class="detail-value">{{ specialist.job_region|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Описание компании:</div>
+            <div class="detail-value">{{ specialist.job_description|linebreaks|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Стаж в PR/медиа:</div>
+            <div class="detail-value">{{ specialist.experience_years }} лет</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Описание деятельности:</div>
+            <div class="detail-value">{{ specialist.professional_description|linebreaks|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Специализация:</div>
+            <div class="detail-value">{{ specialist.specialization|default:"—" }}</div>
+        </div>
+    </div>
+
+    <!-- Достижения -->
+    <div class="detail-section">
+        <h3>Достижения</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Навыки и сертификаты:</div>
+            <div class="detail-value">{{ specialist.skills|linebreaks|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Награды:</div>
+            <div class="detail-value">{{ specialist.awards|linebreaks|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Публикации:</div>
+            <div class="detail-value">{{ specialist.publications|linebreaks|default:"—" }}</div>
+        </div>
+    </div>
+
+    <!-- Мотивация и интересы -->
+    <div class="detail-section">
+        <h3>Мотивация и интересы</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Мотивация вступления:</div>
+            <div class="detail-value">{{ specialist.motivation|linebreaks|default:"—" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Интересы:</div>
+            <div class="detail-value">
+                {% if interests_list %}
+                    <div class="interests-list">
+                        {% for interest in interests_list %}
+                            <span class="interest-tag">{{ interest }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Рекомендатель:</div>
+            <div class="detail-value">{{ specialist.recommender|default:"—" }}</div>
+        </div>
+    </div>
+
+    <!-- Файлы -->
+    <div class="detail-section">
+        <h3>Файлы</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Резюме/CV:</div>
+            <div class="detail-value">
+                {% if specialist.resume %}
+                    <a href="{{ specialist.resume.url }}" class="file-link" target="_blank">Скачать резюме</a>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Дополнительные документы:</div>
+            <div class="detail-value">
+                {% if specialist.documents %}
+                    <a href="{{ specialist.documents.url }}" class="file-link" target="_blank">Скачать документы</a>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Статус и согласия -->
+    <div class="detail-section">
+        <h3>Статус и согласия</h3>
+        
+        <div class="detail-row">
+            <div class="detail-label">Статус модерации:</div>
+            <div class="detail-value">
+                <span class="status-badge status-{{ specialist.moderation_status }}">
+                    {{ specialist.get_moderation_status_display }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Участник ассоциации:</div>
+            <div class="detail-value">{% if specialist.is_member %}Да{% else %}Нет{% endif %}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Дата подачи заявки:</div>
+            <div class="detail-value">{{ specialist.created_at|date:"d.m.Y H:i" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Подтверждение данных:</div>
+            <div class="detail-value">{% if specialist.confirm_data %}Да{% else %}Нет{% endif %}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Согласие на обработку:</div>
+            <div class="detail-value">{% if specialist.consent_personal_data %}Да{% else %}Нет{% endif %}</div>
+        </div>
+    </div>
+
+    <div class="submit-row">
+        <a href="{% url 'admin:myapp_specialist_change' specialist.pk %}" class="default">Редактировать</a>
+        <a href="{% url 'admin:myapp_specialist_changelist' %}" class="button">← Назад к списку</a>
+    </div>
+</div>
+{% endblock %}
