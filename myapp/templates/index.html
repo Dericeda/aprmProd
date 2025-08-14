@@ -870,140 +870,30 @@ PR и медиа
     });
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          // Обработчики для отображения имен выбранных файлов
-          function setupFileInput(inputName, displayId) {
-              const input = document.querySelector(`input[name="${inputName}"]`);
-              const display = document.getElementById(displayId);
-              
-              if (input && display) {
-                  input.addEventListener('change', function(e) {
-                      const file = e.target.files[0];
-                      if (file) {
-                          display.textContent = file.name;
-                          display.style.color = '#28a745';
-                      } else {
-                          display.textContent = 'Файл не выбран';
-                          display.style.color = '#6c757d';
-                      }
-                  });
-              }
-          }
-          
-          // Настраиваем все файловые инпуты
-          setupFileInput('resume', 'filename_resume');
-          setupFileInput('photo', 'filename_photo');
-          setupFileInput('documents', 'filename_documents');
-
-          // Обработка отправки формы через AJAX
-          const form = document.getElementById('applicationForm');
-          const submitBtn = document.getElementById('submitBtn');
-          const formWrapper = document.getElementById('applicationFormWrapper');
-          const successMessage = document.getElementById('successMessage');
-
-          if (form && submitBtn) {
-              form.addEventListener('submit', function(e) {
-                  e.preventDefault();
-                  
-                  // Проверяем обязательные поля
-                  const requiredFields = form.querySelectorAll('[required]');
-                  let hasErrors = false;
-                  
-                  requiredFields.forEach(field => {
-                      if (!field.value.trim() && field.type !== 'checkbox') {
-                          field.style.borderColor = '#dc3545';
-                          hasErrors = true;
-                      } else if (field.type === 'checkbox' && !field.checked) {
-                          field.closest('label').style.color = '#dc3545';
-                          hasErrors = true;
-                      } else {
-                          field.style.borderColor = '';
-                          if (field.type === 'checkbox') {
-                              field.closest('label').style.color = '';
-                          }
-                      }
-                  });
-
-                  if (hasErrors) {
-                      alert('Пожалуйста, заполните все обязательные поля');
-                      return;
-                  }
-
-                  // Отключаем кнопку и показываем загрузку
-                  submitBtn.disabled = true;
-                  submitBtn.textContent = 'ОТПРАВЛЯЕТСЯ...';
-
-                  // Отправляем форму
-                  const formData = new FormData(form);
-                  
-                  fetch(window.location.href, {
-                      method: 'POST',
-                      body: formData,
-                      headers: {
-                          'X-Requested-With': 'XMLHttpRequest',
-                          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                      }
-                  })
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          // Показываем сообщение об успехе
-                          formWrapper.style.display = 'none';
-                          successMessage.style.display = 'block';
-                      } else {
-                          // Показываем ошибки
-                          console.error('Ошибки формы:', data.errors);
-                          alert('Произошла ошибка при отправке формы. Проверьте правильность заполнения полей.');
-                          
-                          // Включаем кнопку обратно
-                          submitBtn.disabled = false;
-                          submitBtn.textContent = 'ОТПРАВИТЬ';
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Ошибка:', error);
-                      alert('Произошла ошибка при отправке формы. Попробуйте еще раз.');
-                      
-                      // Включаем кнопку обратно
-                      submitBtn.disabled = false;
-                      submitBtn.textContent = 'ОТПРАВИТЬ';
-                  });
-              });
-          }
-
-          // Валидация email в реальном времени
-          const emailField = document.querySelector('input[name="email"]');
-          if (emailField) {
-              emailField.addEventListener('blur', function() {
-                  const email = this.value.trim();
-                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                  
-                  if (email && !emailRegex.test(email)) {
-                      this.style.borderColor = '#dc3545';
-                      // Можно добавить сообщение об ошибке
-                  } else {
-                      this.style.borderColor = '';
-                  }
-              });
-          }
-
-          // Валидация телефона
-          const phoneField = document.querySelector('input[name="phone"]');
-          if (phoneField) {
-              phoneField.addEventListener('input', function() {
-                  // Разрешаем только цифры, +, -, (, ), пробелы
-                  this.value = this.value.replace(/[^\d\+\-\(\)\s]/g, '');
-              });
-          }
-
-          // Валидация дополнительного телефона
-          const additionalPhoneField = document.querySelector('input[name="additional_phone"]');
-          if (additionalPhoneField) {
-              additionalPhoneField.addEventListener('input', function() {
-                  this.value = this.value.replace(/[^\d\+\-\(\)\s]/g, '');
-              });
-          }
-      });
+    // Добавить в конец существующего JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      // Обработчики для отображения имен выбранных файлов
+      function setupFileInput(inputId, displayId) {
+        const input = document.getElementById(inputId);
+        const display = document.getElementById(displayId);
+        
+        if (input && display) {
+          input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              display.textContent = file.name;
+            } else {
+              display.textContent = 'Файл не выбран';
+            }
+          });
+        }
+      }
+      
+      // Настраиваем все файловые инпуты
+      setupFileInput('id_resume', 'filename_resume');
+      setupFileInput('id_photo', 'filename_photo');
+      setupFileInput('id_documents', 'filename_documents');
+    });
     </script>
 
 

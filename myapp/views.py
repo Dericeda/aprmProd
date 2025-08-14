@@ -169,37 +169,40 @@ def index(request):
                 specialist.confirm_data = data.get('confirm_data', False)
                 specialist.consent_personal_data = data.get('consent_personal_data', False)
                 
-                # Сохраняем специалиста БЕЗ фото сначала
-                specialist.save()
-                
-                # Теперь обрабатываем фото отдельно
+                # Добавляем фото ПЕРЕД сохранением
                 photo_file = request.FILES.get('photo')
                 if photo_file:
                     specialist.photo = photo_file
-                    specialist.save()
 
-                # Обрабатываем остальные файлы
+                # Добавляем файлы ПЕРЕД сохранением
                 resume_file = request.FILES.get('resume')
                 documents_file = request.FILES.get('documents')
                 
-                # Сохраняем файлы и генерируем ссылки
+                if resume_file:
+                    specialist.resume = resume_file
+                    
+                if documents_file:
+                    specialist.documents = documents_file
+
+                # СОХРАНЯЕМ ТОЛЬКО ОДИН РАЗ
+                specialist.save()
+
+                # Теперь обрабатываем файлы для отправки в Bitrix
                 file_links = []
                 
                 if resume_file:
                     try:
-                        path = default_storage.save(f'uploads/resumes/{resume_file.name}', resume_file)
-                        full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
+                        full_url = request.build_absolute_uri(specialist.resume.url)
                         file_links.append(f"Резюме: {full_url}")
                     except Exception as e:
-                        print(f"Ошибка сохранения резюме: {e}")
+                        print(f"Ошибка получения URL резюме: {e}")
 
                 if documents_file:
                     try:
-                        path = default_storage.save(f'uploads/documents/{documents_file.name}', documents_file)
-                        full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
+                        full_url = request.build_absolute_uri(specialist.documents.url)
                         file_links.append(f"Документы: {full_url}")
                     except Exception as e:
-                        print(f"Ошибка сохранения документов: {e}")
+                        print(f"Ошибка получения URL документов: {e}")
 
                 # Добавляем ссылку на фото в комментарии
                 if photo_file and specialist.photo:
