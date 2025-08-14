@@ -7,6 +7,9 @@ from myapp import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+from myapp.admin import SpecialistAdmin
+from myapp.models import Specialist
+
 # Не оборачивается в i18n
 urlpatterns = [
     path('set_language/', set_language, name='set_language'),  # переключение языка без /ru/
@@ -30,4 +33,7 @@ urlpatterns += i18n_patterns(
     path('news/', include('news.urls')),
     path('users/', include('users.urls')),
     path('', include('myapp.urls')),
+    path('admin/specialist/export/', 
+     admin.site._registry[Specialist].export_excel, 
+     name='admin:specialist_export_excel'),
 )

@@ -1,18 +1,20 @@
 # myapp/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
+from django.http import HttpResponse
+from django.urls import path, reverse
+from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
+import openpyxl
+from openpyxl.styles import Font, Alignment
+from datetime import datetime
 
 from .models import Specialist, CourseCategory, Course
-
-# Импортируем TranslationAdmin
 from modeltranslation.admin import TranslationAdmin
-
 
 @admin.register(CourseCategory)
 class CourseCategoryAdmin(TranslationAdmin):
     list_display = ('title',)
-
 
 @admin.register(Course)
 class CourseAdmin(TranslationAdmin):
@@ -20,91 +22,85 @@ class CourseAdmin(TranslationAdmin):
     list_filter = ('category',)
     search_fields = ('title', 'short_description')
 
-
 @admin.register(Specialist)
 class SpecialistAdmin(TranslationAdmin):
     list_display = (
-        'full_name', 
-        'city', 
-        'specialization',
-        'position', 
-        'is_member', 
-        'moderation_status', 
-        'photo_preview'
+        'full_name', 'city', 'specialization', 'position', 
+        'is_member', 'moderation_status', 'created_at', 'photo_preview', 'detail_link'
     )
-    list_display_links = ('full_name',)
     search_fields = ('full_name', 'email', 'phone', 'specialization', 'workplace')
-    list_filter = ('city', 'is_member', 'category', 'moderation_status')
-    list_editable = ('moderation_status', 'is_member')
+    list_filter = ('city', 'is_member', 'category', 'moderation_status', 'created_at')
+    readonly_fields = ('created_at', 'updated_at')
     
-    # Группировка полей в админке
     fieldsets = (
-        ('Основная информация', {
-            'fields': ('full_name', 'email', 'phone', 'photo')
+        ('Личная информация', {
+            'fields': ('full_name', 'email', 'phone', 'additional_phone', 'birth_date', 
+                      'citizenship', 'city', 'social_links', 'photo')
         }),
-        ('Профессиональная информация', {
-            'fields': ('position', 'workplace', 'city', 'specialization', 'category')
+        ('Образование', {
+            'fields': ('university', 'faculty', 'study_years', 'degree')
         }),
-        ('Подробности', {
-            'fields': ('about', 'job_description', 'experience_years')
+        ('Профессиональная деятельность', {
+            'fields': ('position', 'workplace', 'job_region', 'job_description', 
+                      'experience_years', 'professional_description', 'specialization')
         }),
         ('Достижения', {
-            'fields': ('skills', 'awards', 'publications', 'cases')
+            'fields': ('skills', 'awards', 'publications')
         }),
-        ('Модерация', {
-            'fields': ('moderation_status', 'is_member')
+        ('Мотивация и интересы', {
+            'fields': ('motivation', 'interests', 'recommender')
         }),
-        ('Дополнительно', {
-            'fields': ('social_links', 'motivation', 'recommender'),
-            'classes': ('collapse',)
+        ('Файлы', {
+            'fields': ('resume', 'documents')
         }),
+        ('Дополнительная информация', {
+            'fields': ('about', 'cases', 'category')
+        }),
+        ('Согласия', {
+            'fields': ('confirm_data', 'consent_personal_data')
+        }),
+        ('Статус', {
+            'fields': ('is_member', 'moderation_status', 'created_at', 'updated_at')
+        })
     )
 
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('export-excel/', self.admin_site.admin_view(self.export_excel), name='specialist_export_excel'),
+            path('<int:object_id>/detail/', self.admin_site.admin_view(self.detail_view), name='specialist_detail'),
+        ]
+        return custom_urls + urls
+
     def photo_preview(self, obj):
-        """Метод для отображения превью фото в списке"""
         if obj.photo:
-            try:
-                return format_html(
-                    '<img src="{}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" />',
-                    obj.photo.url
-                )
-            except Exception as e:
-                return format_html(
-                    '<span style="color: red;">Ошибка загрузки: {}</span>',
-                    str(e)
-                )
-        return format_html('<span style="color: gray;">Нет фото</span>')
-    
+            return format_html(
+                '<img src="{}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" />',
+                obj.photo.url
+            )
+        return "-"
     photo_preview.short_description = "Фото"
-    photo_preview.allow_tags = True
 
-    def get_readonly_fields(self, request, obj=None):
-        """Делаем некоторые поля только для чтения"""
-        readonly_fields = []
-        if obj:  # если редактируем существующий объект
-            readonly_fields = ['email', 'phone']
-        return readonly_fields
+    def detail_link(self, obj):
+        url = reverse('admin:specialist_detail', args=[obj.pk])
+        return format_html('<a href="{}" class="button">Подробнее</a>', url)
+    detail_link.short_description = "Действия"
 
-    # Добавляем actions для массовых операций
-    actions = ['approve_specialists', 'reject_specialists', 'make_members']
-
-    def approve_specialists(self, request, queryset):
-        """Одобрить выбранных специалистов"""
-        updated = queryset.update(moderation_status='approved')
-        self.message_user(request, f'Одобрено {updated} специалистов.')
-    approve_specialists.short_description = "Одобрить выбранных специалистов"
-
-    def reject_specialists(self, request, queryset):
-        """Отклонить выбранных специалистов"""
-        updated = queryset.update(moderation_status='rejected')
-        self.message_user(request, f'Отклонено {updated} специалистов.')
-    reject_specialists.short_description = "Отклонить выбранных специалистов"
-
-    def make_members(self, request, queryset):
-        """Сделать участниками ассоциации"""
-        updated = queryset.update(is_member=True)
-        self.message_user(request, f'{updated} специалистов стали участниками ассоциации.')
-    make_members.short_description = "Сделать участниками ассоциации"
+    def detail_view(self, request, object_id):
+        specialist = get_object_or_404(Specialist, pk=object_id)
+        
+        # Парсим интересы из строки обратно в список
+        interests_list = []
+        if specialist.interests:
+            interests_list = specialist.interests.split(', ')
+        
+        context = {
+            'specialist': specialist,
+            'interests_list': interests_list,
+            'title': f'Детальная информация: {specialist.full_name}',
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/specialist_detail.html', context)
 
     def export_excel(self, request):
         # Создаем Excel файл
