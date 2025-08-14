@@ -1,3 +1,4 @@
+# myapp/forms.py
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -41,9 +42,6 @@ class AvatarForm(forms.ModelForm):
         model = AssociationMember
         fields = ['avatar', 'remove_avatar']
 
-
-from django import forms
-from django.utils.translation import gettext_lazy as _
 
 class CRMApplicationForm(forms.Form):
     CATEGORY_CHOICES = [
@@ -91,8 +89,6 @@ class CRMApplicationForm(forms.Form):
     documents = forms.FileField(label=_("Сертификаты и документы"))
 
 
-# myapp/forms.py (добавить к существующему коду)
-
 class ExtendedApplicationForm(forms.Form):
     input_attrs = {'class': 'form-control'}
 
@@ -103,23 +99,75 @@ class ExtendedApplicationForm(forms.Form):
     additional_phone_attrs['id'] = 'id_additional_phone'
 
     # Личные данные
-    last_name = forms.CharField(label=_("Фамилия"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    first_name = forms.CharField(label=_("Имя"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    middle_name = forms.CharField(label=_("Отчество"), required=False, widget=forms.TextInput(attrs=input_attrs))
-    birth_date = forms.DateField(label=_("Дата рождения"), required=True, widget=forms.DateInput(attrs={**input_attrs, 'type': 'date'}))
-    citizenship = forms.CharField(label=_("Гражданство"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    city = forms.CharField(label=_("Город проживания"), required=True, widget=forms.TextInput(attrs=input_attrs))
+    last_name = forms.CharField(
+        label=_("Фамилия"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    first_name = forms.CharField(
+        label=_("Имя"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    middle_name = forms.CharField(
+        label=_("Отчество"), 
+        required=False, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    birth_date = forms.DateField(
+        label=_("Дата рождения"), 
+        required=True, 
+        widget=forms.DateInput(attrs={**input_attrs, 'type': 'date'})
+    )
+    citizenship = forms.CharField(
+        label=_("Гражданство"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    city = forms.CharField(
+        label=_("Город проживания"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
 
     # Контакты
-    phone = forms.CharField(label=_("Мобильный телефон"), required=True, widget=forms.TextInput(attrs=phone_attrs))
-    additional_phone = forms.CharField(label=_("Дополнительный номер"), required=False, widget=forms.TextInput(attrs=additional_phone_attrs))
-    email = forms.EmailField(label=_("Электронная почта"), required=True, widget=forms.EmailInput(attrs=input_attrs))
-    social_links = forms.CharField(label=_("Ссылка на профиль в соцсетях"), required=True, widget=forms.TextInput(attrs=input_attrs))
+    phone = forms.CharField(
+        label=_("Мобильный телефон"), 
+        required=True, 
+        widget=forms.TextInput(attrs=phone_attrs)
+    )
+    additional_phone = forms.CharField(
+        label=_("Дополнительный номер"), 
+        required=False, 
+        widget=forms.TextInput(attrs=additional_phone_attrs)
+    )
+    email = forms.EmailField(
+        label=_("Электронная почта"), 
+        required=True, 
+        widget=forms.EmailInput(attrs=input_attrs)
+    )
+    social_links = forms.CharField(
+        label=_("Ссылка на профиль в соцсетях"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
 
     # Образование
-    university = forms.CharField(label=_("Учебное заведение"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    faculty = forms.CharField(label=_("Факультет / Специальность"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    study_years = forms.CharField(label=_("Годы обучения"), required=True, widget=forms.TextInput(attrs=input_attrs))
+    university = forms.CharField(
+        label=_("Учебное заведение"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    faculty = forms.CharField(
+        label=_("Факультет / Специальность"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    study_years = forms.CharField(
+        label=_("Годы обучения"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
     degree = forms.ChoiceField(
         label=_("Академическая степень"),
         required=True,
@@ -134,20 +182,60 @@ class ExtendedApplicationForm(forms.Form):
     )
 
     # Проф. деятельность
-    job_place = forms.CharField(label=_("Текущее место работы"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    job_title = forms.CharField(label=_("Должность"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    job_region = forms.CharField(label=_("Регион профессиональной деятельности"), required=True, widget=forms.TextInput(attrs=input_attrs))
-    job_description = forms.CharField(label=_("Краткая характеристика компании/организации"), required=True, widget=forms.Textarea(attrs=input_attrs))
-    experience_years = forms.IntegerField(label=_("Общий стаж в PR/медиа"), required=True, widget=forms.NumberInput(attrs=input_attrs))
-    professional_description = forms.CharField(label=_("Краткое описание профессиональной деятельности"), required=True, widget=forms.Textarea(attrs=input_attrs))
+    job_place = forms.CharField(
+        label=_("Текущее место работы"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    job_title = forms.CharField(
+        label=_("Должность"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    job_region = forms.CharField(
+        label=_("Регион профессиональной деятельности"), 
+        required=True, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
+    job_description = forms.CharField(
+        label=_("Краткая характеристика компании/организации"), 
+        required=True, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
+    experience_years = forms.IntegerField(
+        label=_("Общий стаж в PR/медиа"), 
+        required=True, 
+        widget=forms.NumberInput(attrs=input_attrs)
+    )
+    professional_description = forms.CharField(
+        label=_("Краткое описание профессиональной деятельности"), 
+        required=True, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
 
     # Достижения
-    skills = forms.CharField(label=_("Знания, навыки, сертификаты"), required=False, widget=forms.Textarea(attrs=input_attrs))
-    awards = forms.CharField(label=_("Награды, дипломы, признание"), required=False, widget=forms.Textarea(attrs=input_attrs))
-    publications = forms.CharField(label=_("Публикации, авторские проекты"), required=False, widget=forms.Textarea(attrs=input_attrs))
+    skills = forms.CharField(
+        label=_("Знания, навыки, сертификаты"), 
+        required=False, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
+    awards = forms.CharField(
+        label=_("Награды, дипломы, признание"), 
+        required=False, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
+    publications = forms.CharField(
+        label=_("Публикации, авторские проекты"), 
+        required=False, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
 
     # Мотивация
-    motivation = forms.CharField(label=_("Почему вы хотите вступить в Ассоциацию?"), required=True, widget=forms.Textarea(attrs=input_attrs))
+    motivation = forms.CharField(
+        label=_("Почему вы хотите вступить в Ассоциацию?"), 
+        required=True, 
+        widget=forms.Textarea(attrs=input_attrs)
+    )
     interests = forms.MultipleChoiceField(
         label=_("Какие направления вам наиболее интересны?"),
         required=False,
@@ -160,12 +248,19 @@ class ExtendedApplicationForm(forms.Form):
         widget=forms.CheckboxSelectMultiple
     )
 
-    recommender = forms.CharField(label=_("Кто из pr специалистов с опытом работы от 7 лет может выступить вашим рекомендателем"), required=False, widget=forms.TextInput(attrs=input_attrs))
+    recommender = forms.CharField(
+        label=_("Кто из pr специалистов с опытом работы от 7 лет может выступить вашим рекомендателем"), 
+        required=False, 
+        widget=forms.TextInput(attrs=input_attrs)
+    )
 
     # Файлы
-    resume = forms.FileField(label=_("Резюме"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    resume = forms.FileField(
+        label=_("Резюме"), 
+        required=False, 
+        widget=forms.ClearableFileInput(attrs=input_attrs)
+    )
     
-    # ДОБАВЛЯЕМ ПОЛЕ ДЛЯ ФОТО
     photo = forms.ImageField(
         label=_("Фотография"), 
         required=False, 
@@ -176,9 +271,25 @@ class ExtendedApplicationForm(forms.Form):
         help_text=_("Загрузите вашу фотографию (максимум 5MB)")
     )
 
+    documents = forms.FileField(
+        label=_("Дополнительные документы"), 
+        required=False, 
+        widget=forms.ClearableFileInput(attrs=input_attrs)
+    )
+
     # Согласия
-    confirm_data = forms.BooleanField(label=_("Я подтверждаю достоверность указанных данных."), required=True)
-    consent_personal_data = forms.BooleanField(label=_("Я согласен(а) на обработку персональных данных."), required=True)
+    confirm_data = forms.BooleanField(
+        label=_("Я подтверждаю достоверность указанных данных."), 
+        required=True
+    )
+    consent_personal_data = forms.BooleanField(
+        label=_("Я согласен(а) на обработку персональных данных."), 
+        required=True
+    )
+    consent_rules = forms.BooleanField(
+        label=_("Я ознакомлен(а) с уставом Ассоциации и обязуюсь его соблюдать."), 
+        required=True
+    )
 
     def clean_photo(self):
         """Валидация фото"""
@@ -192,6 +303,23 @@ class ExtendedApplicationForm(forms.Form):
                 raise forms.ValidationError(_("Файл должен быть изображением"))
         
         return photo
+
+    def clean_email(self):
+        """Валидация email"""
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.lower().strip()
+        return email
+
+    def clean_phone(self):
+        """Валидация телефона"""
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            # Убираем все нецифровые символы кроме +
+            import re
+            phone = re.sub(r'[^\d+]', '', phone)
+        return phone
+
 
 from django import forms
 from .models import Specialist
@@ -223,4 +351,3 @@ class SpecialistAdminForm(forms.ModelForm):
                 raise forms.ValidationError('Файл должен быть изображением')
         
         return photo
-

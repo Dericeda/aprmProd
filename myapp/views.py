@@ -1,3 +1,4 @@
+# myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -5,7 +6,7 @@ from .forms import AssociationMemberForm, MemberFilterForm, AvatarForm
 from users.models import AssociationMember
 from news.models import News
 from myapp.models import Specialist
-import requests  # для отправки в Bitrix24
+import requests
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponse
 from .forms import CRMApplicationForm
@@ -17,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Specialist
 from .forms import ExtendedApplicationForm 
+from django.contrib import messages
 
 
 def category_detail(request, slug):
@@ -89,11 +91,6 @@ def upload_file_to_bitrix(file, filename):
         return result['result']['ID']
     return None
 
-# myapp/views.py (обновить функцию index)
-
-# В файле myapp/views.py замените функцию index на эту версию:
-
-# myapp/views.py - исправленная часть функции index
 
 def index(request):
     latest_courses = Course.objects.order_by('-id')[:5]
@@ -134,95 +131,144 @@ def index(request):
     if request.method == 'POST':
         form = ExtendedApplicationForm(request.POST, request.FILES)
         if form.is_valid():
-            data = form.cleaned_data
-            
-            # Создаём объект специалиста
-            specialist = Specialist.objects.create(
-                full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}",
-                email=data['email'],
-                phone=data['phone'],
-                city=data['city'],
-                specialization=', '.join(data.get('interests', [])),
-                position=data['job_title'],
-                workplace=data['job_place'],
-                about=data['professional_description'],
-                category=data['degree'],
-                social_links=data['social_links'],
-                job_region=data['job_region'],
-                job_description=data['job_description'],
-                experience_years=data['experience_years'],
-                skills=data.get('skills', ''),
-                awards=data.get('awards', ''),
-                publications=data.get('publications', ''),
-                motivation=data.get('motivation', ''),
-                recommender=data.get('recommender', ''),
-                moderation_status='pending'
-            )
-            
-            # ВАЖНО: Обрабатываем фото отдельно
-            photo_file = request.FILES.get('photo')
-            if photo_file:
-                specialist.photo = photo_file
+            try:
+                data = form.cleaned_data
+                
+                # Создаём объект специалиста
+                specialist = Specialist()
+                specialist.full_name = f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}".strip()
+                specialist.email = data['email']
+                specialist.phone = data['phone']
+                specialist.city = data['city']
+                specialist.specialization = ', '.join(data.get('interests', [])) or 'Не указано'
+                specialist.position = data['job_title']
+                specialist.workplace = data['job_place']
+                specialist.about = data['professional_description']
+                specialist.category = data['degree']
+                specialist.social_links = data['social_links']
+                specialist.job_region = data['job_region']
+                specialist.job_description = data['job_description']
+                specialist.experience_years = data['experience_years']
+                specialist.skills = data.get('skills', '')
+                specialist.awards = data.get('awards', '')
+                specialist.publications = data.get('publications', '')
+                specialist.motivation = data.get('motivation', '')
+                specialist.recommender = data.get('recommender', '')
+                specialist.moderation_status = 'pending'
+                
+                # Дополнительные поля для Specialist модели
+                specialist.additional_phone = data.get('additional_phone', '')
+                specialist.birth_date = data.get('birth_date')
+                specialist.citizenship = data.get('citizenship', '')
+                specialist.university = data.get('university', '')
+                specialist.faculty = data.get('faculty', '')
+                specialist.study_years = data.get('study_years', '')
+                specialist.degree = data.get('degree', '')
+                specialist.professional_description = data.get('professional_description', '')
+                specialist.interests = ', '.join(data.get('interests', []))
+                specialist.confirm_data = data.get('confirm_data', False)
+                specialist.consent_personal_data = data.get('consent_personal_data', False)
+                
+                # Сохраняем специалиста БЕЗ фото сначала
                 specialist.save()
+                
+                # Теперь обрабатываем фото отдельно
+                photo_file = request.FILES.get('photo')
+                if photo_file:
+                    specialist.photo = photo_file
+                    specialist.save()
 
-            # Сохраняем файл резюме
-            file_links = []
-            resume_file = request.FILES.get('resume')
-            if resume_file:
-                path = default_storage.save(f'uploads/{resume_file.name}', resume_file)
-                full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
-                file_links.append(f"Резюме: {full_url}")
+                # Обрабатываем остальные файлы
+                resume_file = request.FILES.get('resume')
+                documents_file = request.FILES.get('documents')
+                
+                # Сохраняем файлы и генерируем ссылки
+                file_links = []
+                
+                if resume_file:
+                    try:
+                        path = default_storage.save(f'uploads/resumes/{resume_file.name}', resume_file)
+                        full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
+                        file_links.append(f"Резюме: {full_url}")
+                    except Exception as e:
+                        print(f"Ошибка сохранения резюме: {e}")
 
-            # Добавляем ссылку на фото в комментарии
-            if photo_file:
-                photo_path = default_storage.save(f'uploads/{photo_file.name}', photo_file)
-                photo_url = request.build_absolute_uri(settings.MEDIA_URL + photo_path)
-                file_links.append(f"Фото: {photo_url}")
+                if documents_file:
+                    try:
+                        path = default_storage.save(f'uploads/documents/{documents_file.name}', documents_file)
+                        full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
+                        file_links.append(f"Документы: {full_url}")
+                    except Exception as e:
+                        print(f"Ошибка сохранения документов: {e}")
 
-            # Формируем текст комментария
-            comments = (
-                f"ФИО: {data['last_name']} {data['first_name']} {data.get('middle_name', '')}\n"
-                f"Дата рождения: {data['birth_date']}\n"
-                f"Гражданство: {data['citizenship']}\n"
-                f"Город: {data['city']}\n\n"
-                f"Телефон: {data['phone']}\n"
-                f"Доп. телефон: {data.get('additional_phone', '')}\n"
-                f"Email: {data['email']}\n"
-                f"Соцсети: {data['social_links']}\n\n"
-                f"Образование: {data['university']}, {data['faculty']}, {data['study_years']}, {data['degree']}\n\n"
-                f"Работа: {data['job_place']}, {data['job_title']}, {data['job_region']}\n"
-                f"О компании: {data['job_description']}\n"
-                f"Стаж: {data['experience_years']} лет\n\n"
-                f"Описание деятельности: {data['professional_description']}\n"
-                f"Навыки: {data.get('skills', '')}\n"
-                f"Награды: {data.get('awards', '')}\n"
-                f"Публикации: {data.get('publications', '')}\n\n"
-                f"Мотивация: {data['motivation']}\n"
-                f"Интересы: {', '.join(data.get('interests', []))}\n"
-                f"Рекомендатель: {data.get('recommender', '')}\n\n"
-                + "\n".join(file_links)
-            )
+                # Добавляем ссылку на фото в комментарии
+                if photo_file and specialist.photo:
+                    try:
+                        photo_url = request.build_absolute_uri(specialist.photo.url)
+                        file_links.append(f"Фото: {photo_url}")
+                    except Exception as e:
+                        print(f"Ошибка получения URL фото: {e}")
 
-            # Отправка в Bitrix24
-            url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
-            payload = {
-                'fields': {
-                    'TITLE': 'Расширенная заявка с сайта',
-                    'NAME': f"{data['first_name']} {data['last_name']}",
-                    'EMAIL': [{'VALUE': data['email'], 'VALUE_TYPE': 'WORK'}],
-                    'PHONE': [{'VALUE': data['phone'], 'VALUE_TYPE': 'WORK'}],
-                    'COMMENTS': comments,
-                }
-            }
-            requests.post(url, json=payload)
+                # Формируем текст комментария
+                comments = (
+                    f"ФИО: {specialist.full_name}\n"
+                    f"Дата рождения: {data.get('birth_date', 'Не указано')}\n"
+                    f"Гражданство: {data.get('citizenship', 'Не указано')}\n"
+                    f"Город: {data['city']}\n\n"
+                    f"Телефон: {data['phone']}\n"
+                    f"Доп. телефон: {data.get('additional_phone', 'Не указано')}\n"
+                    f"Email: {data['email']}\n"
+                    f"Соцсети: {data['social_links']}\n\n"
+                    f"Образование: {data.get('university', '')}, {data.get('faculty', '')}, {data.get('study_years', '')}, {data.get('degree', '')}\n\n"
+                    f"Работа: {data['job_place']}, {data['job_title']}, {data['job_region']}\n"
+                    f"О компании: {data['job_description']}\n"
+                    f"Стаж: {data['experience_years']} лет\n\n"
+                    f"Описание деятельности: {data['professional_description']}\n"
+                    f"Навыки: {data.get('skills', 'Не указано')}\n"
+                    f"Награды: {data.get('awards', 'Не указано')}\n"
+                    f"Публикации: {data.get('publications', 'Не указано')}\n\n"
+                    f"Мотивация: {data['motivation']}\n"
+                    f"Интересы: {', '.join(data.get('interests', ['Не указано']))}\n"
+                    f"Рекомендатель: {data.get('recommender', 'Не указано')}\n\n"
+                    + "\n".join(file_links)
+                )
 
+                # Отправка в Bitrix24
+                try:
+                    url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
+                    payload = {
+                        'fields': {
+                            'TITLE': f'Расширенная заявка: {specialist.full_name}',
+                            'NAME': specialist.full_name,
+                            'EMAIL': [{'VALUE': data['email'], 'VALUE_TYPE': 'WORK'}],
+                            'PHONE': [{'VALUE': data['phone'], 'VALUE_TYPE': 'WORK'}],
+                            'COMMENTS': comments,
+                        }
+                    }
+                    response = requests.post(url, json=payload, timeout=10)
+                    print(f"Bitrix response: {response.status_code}, {response.text}")
+                except Exception as e:
+                    print(f"Ошибка отправки в Bitrix: {e}")
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True})
+                else:
+                    messages.success(request, 'Ваша заявка успешно отправлена!')
+                    return redirect('success')
+
+            except Exception as e:
+                print(f"Ошибка обработки формы: {e}")
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'errors': {'general': ['Произошла ошибка при обработке заявки']}}, status=500)
+                else:
+                    messages.error(request, 'Произошла ошибка при отправке заявки. Попробуйте еще раз.')
+
+        else:
+            print("Форма невалидна:", form.errors)
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': True})
+                return JsonResponse({'success': False, 'errors': form.errors}, status=400)
             else:
-                return redirect('success')
-
-        elif request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+                messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
 
     latest_news = News.objects.order_by('-date')[:6]
 
@@ -263,8 +309,6 @@ def dashboard(request):
                 member.avatar.delete()
             form.save()
     else:
-        print("❌ Форма невалидна")
-        print(form.errors)
         form = AvatarForm(instance=member)
 
     return render(request, 'dashboard.html', {'form': form, 'member': member})
@@ -309,9 +353,9 @@ def join_association(request):
 
             # Загрузка файлов
             files = {
-                'motivation': request.FILES['motivation_letter'],
-                'photo': request.FILES['photo'],
-                'documents': request.FILES['documents'],
+                'motivation': request.FILES.get('motivation_letter'),
+                'photo': request.FILES.get('photo'),
+                'documents': request.FILES.get('documents'),
             }
 
             # Заменить URL на свой вебхук
@@ -340,7 +384,6 @@ def join_association(request):
             return render(request, 'success.html')
 
     return render(request, 'join_form.html', {'form': form})
-
 
 
 @login_required
