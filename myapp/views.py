@@ -93,6 +93,8 @@ def upload_file_to_bitrix(file, filename):
 
 # В файле myapp/views.py замените функцию index на эту версию:
 
+# myapp/views.py - исправленная часть функции index
+
 def index(request):
     latest_courses = Course.objects.order_by('-id')[:5]
     course_categories = CourseCategory.objects.all()
@@ -134,62 +136,36 @@ def index(request):
         if form.is_valid():
             data = form.cleaned_data
             
-            # Создаем объект Specialist с новыми полями
+            # Создаём объект специалиста
             specialist = Specialist.objects.create(
-                # Личные данные
-                full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}".strip(),
+                full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}",
                 email=data['email'],
                 phone=data['phone'],
-                additional_phone=data.get('additional_phone', ''),
-                birth_date=data['birth_date'],
-                citizenship=data['citizenship'],
                 city=data['city'],
-                social_links=data['social_links'],
-                
-                # Образование
-                university=data['university'],
-                faculty=data['faculty'],
-                study_years=data['study_years'],
-                degree=data['degree'],
-                
-                # Профессиональная деятельность
+                specialization=', '.join(data.get('interests', [])),
                 position=data['job_title'],
                 workplace=data['job_place'],
+                about=data['professional_description'],
+                category=data['degree'],
+                social_links=data['social_links'],
                 job_region=data['job_region'],
                 job_description=data['job_description'],
                 experience_years=data['experience_years'],
-                professional_description=data['professional_description'],
-                
-                # Достижения
                 skills=data.get('skills', ''),
                 awards=data.get('awards', ''),
                 publications=data.get('publications', ''),
-                
-                # Мотивация
                 motivation=data.get('motivation', ''),
-                interests=', '.join(data.get('interests', [])),  # Преобразуем список в строку
                 recommender=data.get('recommender', ''),
-                
-                # Остальные поля (можно заполнить позже через админку)
-                specialization=', '.join(data.get('interests', [])),  # Используем interests как специализацию
-                about=data['professional_description'],  # Дублируем описание деятельности
-                category=data['degree'],  # Используем степень как категорию
-                
-                # Статус
-                moderation_status='pending',
-                
-                # Согласия
-                confirm_data=data.get('confirm_data', False),
-                consent_personal_data=data.get('consent_personal_data', False),
-                consent_rules=data.get('consent_rules', False),
+                moderation_status='pending'
             )
             
-            # Сохраняем файл резюме если есть
-            if 'resume' in request.FILES:
-                specialist.resume = request.FILES['resume']
+            # ВАЖНО: Обрабатываем фото отдельно
+            photo_file = request.FILES.get('photo')
+            if photo_file:
+                specialist.photo = photo_file
                 specialist.save()
-            
-            # Сохраняем файл резюме (resume)
+
+            # Сохраняем файл резюме
             file_links = []
             resume_file = request.FILES.get('resume')
             if resume_file:
@@ -197,7 +173,13 @@ def index(request):
                 full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
                 file_links.append(f"Резюме: {full_url}")
 
-            # Формируем текст комментария для Bitrix24
+            # Добавляем ссылку на фото в комментарии
+            if photo_file:
+                photo_path = default_storage.save(f'uploads/{photo_file.name}', photo_file)
+                photo_url = request.build_absolute_uri(settings.MEDIA_URL + photo_path)
+                file_links.append(f"Фото: {photo_url}")
+
+            # Формируем текст комментария
             comments = (
                 f"ФИО: {data['last_name']} {data['first_name']} {data.get('middle_name', '')}\n"
                 f"Дата рождения: {data['birth_date']}\n"
@@ -218,10 +200,6 @@ def index(request):
                 f"Мотивация: {data['motivation']}\n"
                 f"Интересы: {', '.join(data.get('interests', []))}\n"
                 f"Рекомендатель: {data.get('recommender', '')}\n\n"
-                f"Согласия:\n"
-                f"- Достоверность данных: {'Да' if data.get('confirm_data') else 'Нет'}\n"
-                f"- Обработка персональных данных: {'Да' if data.get('consent_personal_data') else 'Нет'}\n"
-                f"- Согласие с правилами: {'Да' if data.get('consent_rules') else 'Нет'}\n\n"
                 + "\n".join(file_links)
             )
 

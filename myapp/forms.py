@@ -163,11 +163,64 @@ class ExtendedApplicationForm(forms.Form):
     recommender = forms.CharField(label=_("Кто из pr специалистов с опытом работы от 7 лет может выступить вашим рекомендателем"), required=False, widget=forms.TextInput(attrs=input_attrs))
 
     # Файлы
-    resume = forms.FileField(label=_("Резюме / CV"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
-    photo = forms.FileField(label=_("Фотография кандидата"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
-    documents = forms.FileField(label=_("Дополнительные документы (сертификаты, дипломы)"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    resume = forms.FileField(label=_("Резюме"), required=False, widget=forms.ClearableFileInput(attrs=input_attrs))
+    
+    # ДОБАВЛЯЕМ ПОЛЕ ДЛЯ ФОТО
+    photo = forms.ImageField(
+        label=_("Фотография"), 
+        required=False, 
+        widget=forms.ClearableFileInput(attrs={
+            **input_attrs,
+            'accept': 'image/*'
+        }),
+        help_text=_("Загрузите вашу фотографию (максимум 5MB)")
+    )
 
     # Согласия
     confirm_data = forms.BooleanField(label=_("Я подтверждаю достоверность указанных данных."), required=True)
     consent_personal_data = forms.BooleanField(label=_("Я согласен(а) на обработку персональных данных."), required=True)
-    consent_rules = forms.BooleanField(label=_("Я ознакомлен(а) с правилами и обязуюсь их соблюдать."), required=True)
+
+    def clean_photo(self):
+        """Валидация фото"""
+        photo = self.cleaned_data.get('photo')
+        
+        if photo:
+            if photo.size > 5 * 1024 * 1024:  # 5MB
+                raise forms.ValidationError(_("Размер файла не должен превышать 5MB"))
+            
+            if not photo.content_type.startswith('image/'):
+                raise forms.ValidationError(_("Файл должен быть изображением"))
+        
+        return photo
+
+from django import forms
+from .models import Specialist
+
+class SpecialistAdminForm(forms.ModelForm):
+    """Форма для админки с дополнительной валидацией фото"""
+    
+    class Meta:
+        model = Specialist
+        fields = '__all__'
+        widgets = {
+            'photo': forms.ClearableFileInput(attrs={
+                'accept': 'image/*',
+                'class': 'form-control'
+            })
+        }
+
+    def clean_photo(self):
+        """Валидация загружаемого фото"""
+        photo = self.cleaned_data.get('photo')
+        
+        if photo:
+            # Проверяем размер файла (максимум 5MB)
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError('Размер файла не должен превышать 5MB')
+            
+            # Проверяем тип файла
+            if not photo.content_type.startswith('image/'):
+                raise forms.ValidationError('Файл должен быть изображением')
+        
+        return photo
+
