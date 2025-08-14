@@ -1,12 +1,12 @@
-# translation.py
-
 from modeltranslation.translator import register, TranslationOptions
-from .models import Course, CourseCategory
-from .models import Course, CourseCategory, Specialist  # 👈 добавили Specialist
+from .models import Course, CourseCategory, Specialist
 
 @register(Specialist)
 class SpecialistTranslationOptions(TranslationOptions):
-    fields = ('position', 'about', 'specialization', 'cases', 'category',)
+    fields = (
+        'position', 'about', 'specialization', 'cases', 'category',
+        'professional_description', 'skills', 'motivation', 'job_description'
+    )
     
 @register(CourseCategory)
 class CourseCategoryTranslationOptions(TranslationOptions):

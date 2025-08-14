@@ -61,6 +61,7 @@ class Specialist(models.Model):
     # Согласия
     confirm_data = models.BooleanField("Подтверждение достоверности данных", default=False)
     consent_personal_data = models.BooleanField("Согласие на обработку персональных данных", default=False)
+    consent_rules = models.BooleanField("Согласие с правилами Ассоциации", default=False)
 
     def __str__(self):
         return f"{self.full_name} ({self.city})"

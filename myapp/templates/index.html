@@ -747,6 +747,14 @@ PR и медиа
   <div class="form-group2">
     <label>{{ form.confirm_data }} <span>{{ form.confirm_data.label }} <span style="color:red">*</span></span></label>
     <label>{{ form.consent_personal_data }} <span>{{ form.consent_personal_data.label }} <span style="color:red">*</span></span></label>
+    <label for="{{ form.consent_rules.id_for_label }}">
+        {{ form.consent_rules }}
+        <span>
+          Я ознакомлен(а) с
+          <a href="/static/document/ustav_ru.pdf" target="_blank">уставом</a>
+          Ассоциации и обязуюсь его соблюдать. <span style="color:red">*</span>
+        </span>
+    </label>
 
   </div>
 

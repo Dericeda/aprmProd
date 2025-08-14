@@ -91,6 +91,8 @@ def upload_file_to_bitrix(file, filename):
 
 # myapp/views.py (обновить функцию index)
 
+# В файле myapp/views.py замените функцию index на эту версию:
+
 def index(request):
     latest_courses = Course.objects.order_by('-id')[:5]
     course_categories = CourseCategory.objects.all()
@@ -132,8 +134,9 @@ def index(request):
         if form.is_valid():
             data = form.cleaned_data
             
-            # Создаем объект специалиста
+            # Создаем объект Specialist с новыми полями
             specialist = Specialist.objects.create(
+                # Личные данные
                 full_name=f"{data['last_name']} {data['first_name']} {data.get('middle_name', '')}".strip(),
                 email=data['email'],
                 phone=data['phone'],
@@ -163,81 +166,77 @@ def index(request):
                 publications=data.get('publications', ''),
                 
                 # Мотивация
-                motivation=data['motivation'],
-                interests=', '.join(data.get('interests', [])),  # Сохраняем как строку
+                motivation=data.get('motivation', ''),
+                interests=', '.join(data.get('interests', [])),  # Преобразуем список в строку
                 recommender=data.get('recommender', ''),
                 
-                # Согласия
-                confirm_data=data['confirm_data'],
-                consent_personal_data=data['consent_personal_data'],
+                # Остальные поля (можно заполнить позже через админку)
+                specialization=', '.join(data.get('interests', [])),  # Используем interests как специализацию
+                about=data['professional_description'],  # Дублируем описание деятельности
+                category=data['degree'],  # Используем степень как категорию
                 
                 # Статус
-                moderation_status='pending'
+                moderation_status='pending',
+                
+                # Согласия
+                confirm_data=data.get('confirm_data', False),
+                consent_personal_data=data.get('consent_personal_data', False),
+                consent_rules=data.get('consent_rules', False),
             )
             
-            # Сохраняем файлы
+            # Сохраняем файл резюме если есть
             if 'resume' in request.FILES:
                 specialist.resume = request.FILES['resume']
+                specialist.save()
             
-            if 'photo' in request.FILES:
-                specialist.photo = request.FILES['photo']
-                
-            if 'documents' in request.FILES:
-                specialist.documents = request.FILES['documents']
-                
-            specialist.save()
-
-            # Подготавливаем файлы для отправки в Bitrix24
+            # Сохраняем файл резюме (resume)
             file_links = []
-            
-            if specialist.resume:
-                file_links.append(f"Резюме: {request.build_absolute_uri(specialist.resume.url)}")
-            
-            if specialist.photo:
-                file_links.append(f"Фото: {request.build_absolute_uri(specialist.photo.url)}")
-                
-            if specialist.documents:
-                file_links.append(f"Документы: {request.build_absolute_uri(specialist.documents.url)}")
+            resume_file = request.FILES.get('resume')
+            if resume_file:
+                path = default_storage.save(f'uploads/{resume_file.name}', resume_file)
+                full_url = request.build_absolute_uri(settings.MEDIA_URL + path)
+                file_links.append(f"Резюме: {full_url}")
 
             # Формируем текст комментария для Bitrix24
             comments = (
-                f"ФИО: {specialist.full_name}\n"
-                f"Дата рождения: {specialist.birth_date}\n"
-                f"Гражданство: {specialist.citizenship}\n"
-                f"Город: {specialist.city}\n\n"
-                f"Телефон: {specialist.phone}\n"
-                f"Доп. телефон: {specialist.additional_phone}\n"
-                f"Email: {specialist.email}\n"
-                f"Соцсети: {specialist.social_links}\n\n"
-                f"Образование: {specialist.university}, {specialist.faculty}, {specialist.study_years}, {specialist.degree}\n\n"
-                f"Работа: {specialist.workplace}, {specialist.position}, {specialist.job_region}\n"
-                f"О компании: {specialist.job_description}\n"
-                f"Стаж: {specialist.experience_years} лет\n\n"
-                f"Описание деятельности: {specialist.professional_description}\n"
-                f"Навыки: {specialist.skills}\n"
-                f"Награды: {specialist.awards}\n"
-                f"Публикации: {specialist.publications}\n\n"
-                f"Мотивация: {specialist.motivation}\n"
-                f"Интересы: {specialist.interests}\n"
-                f"Рекомендатель: {specialist.recommender}\n\n"
+                f"ФИО: {data['last_name']} {data['first_name']} {data.get('middle_name', '')}\n"
+                f"Дата рождения: {data['birth_date']}\n"
+                f"Гражданство: {data['citizenship']}\n"
+                f"Город: {data['city']}\n\n"
+                f"Телефон: {data['phone']}\n"
+                f"Доп. телефон: {data.get('additional_phone', '')}\n"
+                f"Email: {data['email']}\n"
+                f"Соцсети: {data['social_links']}\n\n"
+                f"Образование: {data['university']}, {data['faculty']}, {data['study_years']}, {data['degree']}\n\n"
+                f"Работа: {data['job_place']}, {data['job_title']}, {data['job_region']}\n"
+                f"О компании: {data['job_description']}\n"
+                f"Стаж: {data['experience_years']} лет\n\n"
+                f"Описание деятельности: {data['professional_description']}\n"
+                f"Навыки: {data.get('skills', '')}\n"
+                f"Награды: {data.get('awards', '')}\n"
+                f"Публикации: {data.get('publications', '')}\n\n"
+                f"Мотивация: {data['motivation']}\n"
+                f"Интересы: {', '.join(data.get('interests', []))}\n"
+                f"Рекомендатель: {data.get('recommender', '')}\n\n"
+                f"Согласия:\n"
+                f"- Достоверность данных: {'Да' if data.get('confirm_data') else 'Нет'}\n"
+                f"- Обработка персональных данных: {'Да' if data.get('consent_personal_data') else 'Нет'}\n"
+                f"- Согласие с правилами: {'Да' if data.get('consent_rules') else 'Нет'}\n\n"
                 + "\n".join(file_links)
             )
 
             # Отправка в Bitrix24
-            try:
-                url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
-                payload = {
-                    'fields': {
-                        'TITLE': 'Расширенная заявка с сайта',
-                        'NAME': specialist.full_name,
-                        'EMAIL': [{'VALUE': specialist.email, 'VALUE_TYPE': 'WORK'}],
-                        'PHONE': [{'VALUE': specialist.phone, 'VALUE_TYPE': 'WORK'}],
-                        'COMMENTS': comments,
-                    }
+            url = 'https://b24-g0wr9u.bitrix24.kz/rest/1/yd2xd3xr9fa53hqp/crm.lead.add.json'
+            payload = {
+                'fields': {
+                    'TITLE': 'Расширенная заявка с сайта',
+                    'NAME': f"{data['first_name']} {data['last_name']}",
+                    'EMAIL': [{'VALUE': data['email'], 'VALUE_TYPE': 'WORK'}],
+                    'PHONE': [{'VALUE': data['phone'], 'VALUE_TYPE': 'WORK'}],
+                    'COMMENTS': comments,
                 }
-                requests.post(url, json=payload)
-            except Exception as e:
-                print(f"Ошибка отправки в Bitrix24: {e}")
+            }
+            requests.post(url, json=payload)
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': True})
