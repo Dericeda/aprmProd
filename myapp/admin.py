@@ -5,12 +5,28 @@ from django.http import HttpResponse
 from django.urls import path, reverse
 from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
+from django.core.files.base import ContentFile
 import openpyxl
 from openpyxl.styles import Font, Alignment
 from datetime import datetime
+import requests
+from io import BytesIO
 
 from .models import Specialist, CourseCategory, Course
 from modeltranslation.admin import TranslationAdmin
+
+# URL дефолтного изображения
+DEFAULT_PHOTO_URL = 'https://35mezhdurechenskij.gosuslugi.ru/netcat_files/670/2919/unnamed.jpg'
+
+def download_default_photo():
+    """Скачивает дефолтное фото из интернета"""
+    try:
+        response = requests.get(DEFAULT_PHOTO_URL, timeout=10)
+        if response.status_code == 200:
+            return ContentFile(response.content, name='default_photo.jpg')
+    except Exception as e:
+        print(f"Ошибка загрузки дефолтного фото: {e}")
+    return None
 
 @admin.register(CourseCategory)
 class CourseCategoryAdmin(TranslationAdmin):
@@ -63,6 +79,32 @@ class SpecialistAdmin(TranslationAdmin):
             'fields': ('is_member', 'moderation_status', 'created_at', 'updated_at')
         })
     )
+
+    def save_model(self, request, obj, form, change):
+        """Переопределяем метод сохранения для автоматического добавления фото"""
+        # Проверяем, изменился ли статус на 'approved'
+        if change:  # Если это редактирование существующего объекта
+            # Получаем старый объект из базы
+            try:
+                old_obj = Specialist.objects.get(pk=obj.pk)
+                # Если статус изменился на 'approved' и у пользователя нет фото
+                if (old_obj.moderation_status != 'approved' and 
+                    obj.moderation_status == 'approved' and 
+                    not obj.photo):
+                    
+                    # Скачиваем и устанавливаем дефолтное фото
+                    default_photo = download_default_photo()
+                    if default_photo:
+                        obj.photo.save('default_photo.jpg', default_photo, save=False)
+                        print(f"✅ Установлено дефолтное фото для {obj.full_name}")
+                    else:
+                        print(f"❌ Не удалось загрузить дефолтное фото для {obj.full_name}")
+                        
+            except Specialist.DoesNotExist:
+                pass
+        
+        # Сохраняем объект
+        super().save_model(request, obj, form, change)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -194,3 +236,32 @@ class SpecialistAdmin(TranslationAdmin):
         extra_context = extra_context or {}
         extra_context['export_url'] = reverse('admin:specialist_export_excel')
         return super().changelist_view(request, extra_context)
+
+    # Добавляем action для массового одобрения с установкой фото
+    actions = ['approve_selected_with_photo']
+
+    def approve_selected_with_photo(self, request, queryset):
+        """Массовое одобрение заявок с установкой дефолтного фото"""
+        updated_count = 0
+        photo_added_count = 0
+        
+        for specialist in queryset:
+            if specialist.moderation_status != 'approved':
+                specialist.moderation_status = 'approved'
+                
+                # Если нет фото, добавляем дефолтное
+                if not specialist.photo:
+                    default_photo = download_default_photo()
+                    if default_photo:
+                        specialist.photo.save('default_photo.jpg', default_photo, save=False)
+                        photo_added_count += 1
+                
+                specialist.save()
+                updated_count += 1
+        
+        self.message_user(
+            request,
+            f'Одобрено {updated_count} заявок. Добавлено {photo_added_count} дефолтных фотографий.'
+        )
+    
+    approve_selected_with_photo.short_description = "Одобрить выбранные заявки (с добавлением фото)"
