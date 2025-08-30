@@ -3,3 +3,5 @@ pillow
 requests
 django-admin-interface
 django-colorfield
+openpyxl
+django-modeltranslation
