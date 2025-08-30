@@ -99,6 +99,11 @@ def index(request):
     cities = Specialist.objects.values_list('city', flat=True).distinct()
     specializations = Specialist.objects.values_list('specialization', flat=True).distinct()
 
+    # Получаем учредителей - первые 5 одобренных специалистов
+    founders = Specialist.objects.filter(
+        moderation_status='approved'
+    ).order_by('created_at')[:5]
+
     # Параметры фильтрации
     category = request.GET.get('category')
     city = request.GET.get('city')
@@ -279,6 +284,7 @@ def index(request):
         'latest_news': latest_news,
         'form': form,
         'specialists': specialists,
+        'founders': founders,  # Добавляем учредителей в контекст
         'specialist_categories': specialist_categories,
         'cities': cities,
         'specializations': specializations,

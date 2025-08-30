@@ -394,6 +394,70 @@ PR и медиа
             {% endif %}
 
 
+<!-- Блок Учредители -->
+            {% get_current_language as lang %}
+
+            {% if lang == 'kk' %}
+<section class="founders-section" id="founders">
+    <div class="container">
+        <p class="title_about">
+           АССОЦИАЦИЯНЫҢ НЕГІЗІН ҚАЛАУШЫЛАР
+        </p>
+        <p class="description_about">
+            PR, медиа және коммуникация саласындағы жетекші мамандар, Ассоциацияның дамуына зор үлес қосып, кәсіби қоғамдастықтың негізін қалаған тұлғалар.
+        </p>
+      
+      <!-- Список учредителей -->
+      <div class="founders-grid">
+        {% for founder in founders %}
+          <div class="founder-card">
+            {% if founder.photo %}
+              <img src="{{ founder.photo.url }}" alt="{{ founder.full_name }}" class="founder-photo">
+            {% else %}
+              <div class="founder-photo-placeholder"></div>
+            {% endif %}
+            <h4 class="founder-name">{{ founder.full_name }}</h4>
+            <p class="founder-position">{{ founder.position }}</p>
+            <p class="founder-description">{{ founder.about|truncatewords:20 }}</p>
+          </div>
+        {% empty %}
+          <p>Негізін қалаушылар табылмады.</p>
+        {% endfor %}
+      </div>
+  </section>
+  
+            {% elif lang == 'ru' %}
+            <section class="founders-section" id="founders">
+    <div class="container">
+        <p class="title_about">
+            УЧРЕДИТЕЛИ АССОЦИАЦИИ
+        </p>
+        <p class="description_about">
+            Ведущие специалисты в сфере PR, медиа и коммуникаций, внесшие значительный вклад в развитие Ассоциации и заложившие основы профессионального сообщества.
+        </p>
+      
+      <!-- Список учредителей -->
+      <div class="founders-grid">
+        {% for founder in founders %}
+          <div class="founder-card">
+            {% if founder.photo %}
+              <img src="{{ founder.photo.url }}" alt="{{ founder.full_name }}" class="founder-photo">
+            {% else %}
+              <div class="founder-photo-placeholder"></div>
+            {% endif %}
+            <h4 class="founder-name">{{ founder.full_name }}</h4>
+            <p class="founder-position">{{ founder.position }}</p>
+            <p class="founder-description">{{ founder.about|truncatewords:20 }}</p>
+          </div>
+        {% empty %}
+          <p>Учредители не найдены.</p>
+        {% endfor %}
+      </div>
+  </section>
+  
+            {% endif %}
+
+
 
             
             {% get_current_language as lang %}
@@ -819,75 +883,6 @@ PR и медиа
   </div>
 
             {% endif %}
-
-
-<!-- 
-<div class="course_info">
-  <div class="container">
-    
-            {% get_current_language as lang %}
-
-            {% if lang == 'kk' %}
-<p class="title_about">
-      КУРСТАР МЕН ВЕБИНАРЛАР КАТАЛОГЫ
-
-  </p>
-  <p class="description_about">
-    Каталог Ассоциацияның оқу бағдарламаларын қамтиды — медиасауаттылық бойынша базалық курстардан бастап стратегиялық PR, дағдарыс коммуникациялары және digital-маркетинг жөніндегі кәсіби вебинарларға дейін. Барлық материалдар саладағы жетекші сарапшылар әзірлеген және мамандардың біліктілігін арттыруға, практикалық дағдыларын дамытуға, сондай-ақ коммуникация саласындағы заманауи сын-қатерлерге бейімделуге бағытталған
-  </p>
-            {% elif lang == 'ru' %}
-            <p class="title_about">
-      Каталог курсов и вебинаров
-  </p>
-  <p class="description_about">
-    Каталог объединяет обучающие программы Ассоциации — от базовых курсов по медиаграмотности 
-    до профессиональных вебинаров по стратегическому PR, кризисным коммуникациям и digital-маркетингу. 
-    Все материалы разработаны ведущими экспертами отрасли и направлены на повышение квалификации 
-    специалистов, развитие практических навыков и адаптацию к современным вызовам в сфере коммуникаций.
-  </p>
-            {% endif %}
-    
-  <div class="category_course">
-    {% for category in course_categories %}
-    {% if category.slug %}
-      <li><a href="{% url 'category_detail' slug=category.slug %}">{{ category.title }}</a></li>
-    {% else %}
-      <li>{{ category.title }} (нет ссылки)</li>
-    {% endif %}
-  {% endfor %}  
-  </div>
-    <div class="course">
-      {% for course in latest_courses %}
-      <div class="course-item">
-          <a href="{% url 'course_detail' pk=course.pk %}">
-        <img src="{{ course.image.url }}" alt="{{ course.title }}" width="200">
-        <h3>{{ course.title }}</h3>
-        <p><strong>Категория:</strong> {{ course.category.title }}</p>
-        <p>{{ course.short_description }}</p>
-      </a>
-        {% if course.youtube_link %}
-        {% endif %}
-      </div>
-    {% endfor %}
-    </div>
-    <div class="dock_url">
-      <p class="inass_link">
-
-        
-            {% get_current_language as lang %}
-
-            {% if lang == 'kk' %}
-             <a href="/course">Барлық тізім</a>
-            {% elif lang == 'ru' %}
-             <a href="/course">Весь список</a>
-            {% endif %}
-         
-      </p>
-  </div>
-  </div>
-</div> -->
-
- 
 
 
   <script>
