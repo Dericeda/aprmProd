@@ -374,6 +374,7 @@ p.text_vstup {
     object-fit: cover;
     margin: 0 0 15px 0;
     border: none;
+    border-radius: 8px;
 }
 
 
@@ -1145,7 +1146,6 @@ div#newsSwiper img {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
     .founder-photo,
     .founder-photo-placeholder {
         height: 250px;
