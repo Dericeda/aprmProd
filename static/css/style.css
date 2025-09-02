@@ -629,3 +629,301 @@ div#newsSliderTrack img {
     width: 100% !important;
     height: 150px !important;
 }
+
+/* Добавить в конец файла static/css/style.css */
+
+/* ==========================================================================
+   СТИЛИ ДЛЯ ВАЛИДАЦИИ ФАЙЛОВ
+   ========================================================================== */
+
+/* Стили для ошибок файлов */
+.file-error {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.file-validation-error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+    padding: 8px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.file-validation-error::before {
+    content: "⚠ ";
+    font-weight: bold;
+}
+
+/* Стили для успешной загрузки файлов */
+.file-success {
+    color: #28a745 !important;
+    font-weight: 500;
+}
+
+.file-success::before {
+    content: "✓ ";
+    font-weight: bold;
+}
+
+/* Улучшенные стили для файловых инпутов */
+.custom-file-upload {
+    position: relative;
+    display: inline-block;
+    padding: 12px 20px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    font-weight: 500;
+    text-align: center;
+    min-width: 200px;
+}
+
+.custom-file-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.custom-file-upload:active {
+    transform: translateY(0);
+}
+
+.custom-file-upload input[type="file"] {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+}
+
+.custom-file-upload svg {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Стили для drag & drop зоны */
+.drag-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 123, 255, 0.1);
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #007bff;
+    z-index: 10;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Стили для индикатора обработки */
+.processing-indicator {
+    color: #007bff;
+    font-size: 12px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Улучшенные стили для контейнера файлов */
+.file_forms {
+    display: grid;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.file_forms .form-group {
+    position: relative;
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #f8f9fa, #ffffff);
+}
+
+.file_forms .form-group:hover {
+    border-color: #007bff;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+}
+
+.file_forms .form-group.drag-active {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+/* Стили для отображения информации о файле */
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.file-size {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.file-name {
+    color: #495057;
+    font-weight: 600;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ограничения размера файлов - подсказки */
+.file-size-hint {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.file-size-hint::before {
+    content: "💡 ";
+}
+
+/* Стили для предварительного просмотра изображений */
+.image-preview {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Анимация для успешной загрузки */
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.file-upload-success {
+    animation: successPulse 0.6s ease-in-out;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+    .file_forms {
+        grid-template-columns: 1fr;
+    }
+    
+    .custom-file-upload {
+        width: 100%;
+        min-width: unset;
+        padding: 15px;
+    }
+    
+    .file_forms .form-group {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-file-upload {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    .file-validation-error {
+        font-size: 13px;
+        padding: 6px;
+    }
+}
+
+/* Стили для темной темы (опционально) */
+@media (prefers-color-scheme: dark) {
+    .file_forms .form-group {
+        background: linear-gradient(145deg, #2d3748, #4a5568);
+        border-color: #4a5568;
+    }
+    
+    .file-info {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .file-size-hint {
+        color: #a0aec0;
+    }
+}
+
+/* Стили для accessibility */
+.custom-file-upload:focus-within {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.file_forms .form-group[aria-invalid="true"] {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+/* Дополнительные стили для лучшего UX */
+.file-type-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.file-upload-zone {
+    text-align: center;
+    padding: 30px;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload-zone:hover {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.02);
+}
+
+.file-upload-zone.dragover {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+    transform: scale(1.02);
+}

@@ -926,6 +926,289 @@ PR и медиа
       setupFileInput('id_photo', 'filename_photo');
       setupFileInput('id_documents', 'filename_documents');
     });
+
+    // Улучшенная валидация файлов с автоопределением
+function setupAdvancedFileInput(inputId, displayId, maxSize, fileType = 'файл') {
+    const input = document.getElementById(inputId);
+    const display = document.getElementById(displayId);
+    
+    if (input && display) {
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            // Очищаем предыдущие ошибки
+            display.classList.remove('file-error');
+            display.style.color = '';
+            
+            if (file) {
+                // Проверяем размер файла
+                if (file.size > maxSize) {
+                    const maxSizeMB = Math.round(maxSize / (1024*1024));
+                    const fileSizeMB = (file.size / (1024*1024)).toFixed(1);
+                    
+                    let errorMessage = `Ошибка: Вы превысили объем ${fileType} ${maxSizeMB}МБ`;
+                    if (fileType.toLowerCase() === 'фото') {
+                        errorMessage = `Ошибка: Вы превысили объем фото ${maxSizeMB}МБ`;
+                    }
+                    
+                    display.textContent = `${errorMessage} (текущий размер: ${fileSizeMB}МБ)`;
+                    display.classList.add('file-error');
+                    display.style.color = '#dc3545';
+                    
+                    // Показываем alert
+                    alert(`${errorMessage}\nТекущий размер файла: ${fileSizeMB}МБ\nПожалуйста, выберите файл меньшего размера.`);
+                    
+                    // Очищаем поле
+                    input.value = '';
+                    
+                    // Создаем видимую ошибку
+                    showFileError(input, errorMessage);
+                    
+                    return;
+                }
+                
+                // Дополнительная проверка типа файла для фото
+                if (inputId === 'id_photo' && !file.type.startsWith('image/')) {
+                    const errorMessage = 'Ошибка: Выберите изображение (JPG, PNG, GIF)';
+                    display.textContent = errorMessage;
+                    display.classList.add('file-error');
+                    display.style.color = '#dc3545';
+                    
+                    alert(errorMessage);
+                    input.value = '';
+                    showFileError(input, errorMessage);
+                    return;
+                }
+                
+                // Файл подходит
+                const fileSizeMB = (file.size / (1024*1024)).toFixed(1);
+                display.textContent = `${file.name} (${fileSizeMB}МБ)`;
+                display.style.color = '#28a745'; // Зеленый цвет для успеха
+                
+                // Удаляем ошибки
+                removeFileError(input);
+                
+            } else {
+                // Файл не выбран
+                let placeholderText = 'Файл не выбран';
+                if (inputId === 'id_photo') {
+                    placeholderText = 'Фото не выбрано';
+                } else if (inputId === 'id_resume') {
+                    placeholderText = 'Резюме не выбрано';
+                } else if (inputId === 'id_documents') {
+                    placeholderText = 'Документы не выбраны';
+                }
+                
+                display.textContent = placeholderText;
+                display.style.color = '';
+                removeFileError(input);
+            }
+        });
+    }
+}
+
+// Функция для показа ошибки файла
+function showFileError(input, errorMessage) {
+    // Удаляем предыдущие ошибки
+    removeFileError(input);
+    
+    // Создаем элемент ошибки
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'file-validation-error';
+    errorDiv.style.cssText = `
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+        padding: 8px;
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        animation: fadeIn 0.3s ease-in;
+    `;
+    errorDiv.textContent = errorMessage;
+    
+    // Вставляем после поля файла
+    input.parentNode.insertBefore(errorDiv, input.nextSibling);
+    
+    // Добавляем красную рамку к полю
+    input.style.borderColor = '#dc3545';
+}
+
+// Функция для удаления ошибки файла
+function removeFileError(input) {
+    // Удаляем элемент ошибки
+    const errorDiv = input.parentNode.querySelector('.file-validation-error');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+    
+    // Убираем красную рамку
+    input.style.borderColor = '';
+}
+
+// Функция для форматирования размера файла
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Байт';
+    
+    const k = 1024;
+    const sizes = ['Байт', 'КБ', 'МБ', 'ГБ'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Улучшенная функция drag & drop для файлов
+function setupFileDragDrop(inputId, maxSize, fileType) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    const container = input.closest('.form-group');
+    if (!container) return;
+    
+    // Добавляем стили для drag & drop
+    container.style.position = 'relative';
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drag-overlay';
+    overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 123, 255, 0.1);
+        border: 2px dashed #007bff;
+        border-radius: 8px;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: #007bff;
+        z-index: 10;
+    `;
+    overlay.textContent = `Отпустите ${fileType} здесь`;
+    container.appendChild(overlay);
+    
+    // События drag & drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        container.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        container.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        container.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        overlay.style.display = 'flex';
+    }
+    
+    function unhighlight() {
+        overlay.style.display = 'none';
+    }
+    
+    container.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            const file = files[0];
+            
+            // Проверяем размер
+            if (file.size > maxSize) {
+                const maxSizeMB = Math.round(maxSize / (1024*1024));
+                const fileSizeMB = (file.size / (1024*1024)).toFixed(1);
+                
+                alert(`Файл слишком большой!\nМаксимальный размер: ${maxSizeMB}МБ\nРазмер вашего файла: ${fileSizeMB}МБ`);
+                return;
+            }
+            
+            // Устанавливаем файл
+            input.files = files;
+            
+            // Вызываем событие change
+            const event = new Event('change', { bubbles: true });
+            input.dispatchEvent(event);
+        }
+    }
+}
+
+// Инициализация при загрузке DOM
+document.addEventListener('DOMContentLoaded', function() {
+    // Настраиваем валидацию файлов с конкретными ограничениями
+    setupAdvancedFileInput('id_resume', 'filename_resume', 10 * 1024 * 1024, 'файла'); // 10MB
+    setupAdvancedFileInput('id_photo', 'filename_photo', 5 * 1024 * 1024, 'фото'); // 5MB  
+    setupAdvancedFileInput('id_documents', 'filename_documents', 10 * 1024 * 1024, 'файла'); // 10MB
+    
+    // Добавляем drag & drop
+    setupFileDragDrop('id_resume', 10 * 1024 * 1024, 'резюме');
+    setupFileDragDrop('id_photo', 5 * 1024 * 1024, 'фото');
+    setupFileDragDrop('id_documents', 10 * 1024 * 1024, 'документы');
+    
+    // Добавляем индикатор прогресса для больших файлов
+    addProgressIndicator();
+});
+
+// Функция для добавления индикатора прогресса
+function addProgressIndicator() {
+    const fileInputs = ['id_resume', 'id_photo', 'id_documents'];
+    
+    fileInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.size > 1024 * 1024) { // Файлы больше 1MB
+                    showProcessingIndicator(input);
+                    
+                    // Имитируем обработку файла
+                    setTimeout(() => {
+                        hideProcessingIndicator(input);
+                    }, 1000);
+                }
+            });
+        }
+    });
+}
+
+function showProcessingIndicator(input) {
+    let indicator = input.parentNode.querySelector('.processing-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'processing-indicator';
+        indicator.style.cssText = `
+            color: #007bff;
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        `;
+        indicator.innerHTML = `
+            <div style="width: 12px; height: 12px; border: 2px solid #007bff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 5px;"></div>
+            Обработка файла...
+        `;
+        input.parentNode.appendChild(indicator);
+    }
+    indicator.style.display = 'flex';
+}
+
+function hideProcessingIndicator(input) {
+    const indicator = input.parentNode.querySelector('.processing-indicator');
+    if (indicator) {
+        indicator.style.display = 'none';
+    }
+}
+
     </script>
 
 
