@@ -4,9 +4,8 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-123'
-DEBUG = True
-ALLOWED_HOSTS = ['aprm.kz', 'www.aprm.kz', '89.35.124.175']
-
+DEBUG = False
+ALLOWED_HOSTS = ['aprm.kz', 'www.aprm.kz', '89.35.124.175','127.0.0.1']
 
 
 # Языки
@@ -93,9 +92,10 @@ STATIC_URL = '/static/'
 
 # Убрал STATICFILES_DIRS, чтобы не конфликтовало с STATIC_ROOT
 # Используй STATICFILES_DIRS только если у тебя есть отдельная директория с исходными статическими файлами (например, BASE_DIR / 'static')
-# STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
